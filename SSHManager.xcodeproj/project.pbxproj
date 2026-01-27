@@ -250,6 +250,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = "5.7";
 				"SWIFT_SUPPRESS_WARNINGS[sdk=macosx*]" = YES;
 			};
 			name = Debug;
@@ -311,6 +312,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = "5.7";
 				"SWIFT_SUPPRESS_WARNINGS[sdk=macosx*]" = YES;
 			};
 			name = Release;
