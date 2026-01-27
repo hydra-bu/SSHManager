@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6C83EC232A8E4F7D004B4D4A"
+               BlueprintIdentifier = "6C83EC062A8E4F7D004B4D4A"
                BuildableName = "SSHManager.app"
                BlueprintName = "SSHManager"
                ReferencedContainer = "container:SSHManager.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6C83EC232A8E4F7D004B4D4A"
+            BlueprintIdentifier = "6C83EC062A8E4F7D004B4D4A"
             BuildableName = "SSHManager.app"
             BlueprintName = "SSHManager"
             ReferencedContainer = "container:SSHManager.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6C83EC232A8E4F7D004B4D4A"
+            BlueprintIdentifier = "6C83EC062A8E4F7D004B4D4A"
             BuildableName = "SSHManager.app"
             BlueprintName = "SSHManager"
             ReferencedContainer = "container:SSHManager.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6C83EC232A8E4F7D004B4D4A"
+            BlueprintIdentifier = "6C83EC062A8E4F7D004B4D4A"
             BuildableName = "SSHManager.app"
             BlueprintName = "SSHManager"
             ReferencedContainer = "container:SSHManager.xcodeproj">
