@@ -47,8 +47,6 @@
 			isa = PBXGroup;
 			children = (
 				6C83EC082A8E4F7D004B4D4A /* SSHManager */,
-				6C83EC2B2A8E4F7D004B4D4A /* Assets.xcassets */,
-				6C83EC2C2A8E4F7D004B4D4A /* Info.plist */,
 				6C83EC072A8E4F7D004B4D4A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -69,6 +67,8 @@
 				6C83EC1D2A8E4F7D004B4D4A /* Services */,
 				6C83EC1E2A8E4F7D004B4D4A /* Views */,
 				6C83EC1F2A8E4F7D004B4D4A /* Utils */,
+				6C83EC2B2A8E4F7D004B4D4A /* Assets.xcassets */,
+				6C83EC2C2A8E4F7D004B4D4A /* Info.plist */,
 			);
 			path = Sources/SSHManager;
 			sourceTree = "<group>";
@@ -247,6 +247,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hydra-bu.SSHManager;
 				PRODUCT_MODULE_NAME = SSHManager;
+				PRODUCT_NAME = SSHManager;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = true;
@@ -311,6 +312,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hydra-bu.SSHManager;
 				PRODUCT_MODULE_NAME = SSHManager;
+				PRODUCT_NAME = SSHManager;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
