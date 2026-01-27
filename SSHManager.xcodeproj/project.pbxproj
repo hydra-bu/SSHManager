@@ -20,16 +20,16 @@
 
 /* Begin PBXFileReference section */
 		6C83EC052A8E4F7D004B4D4A /* SSHManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSHManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C83EC092A8E4F7D004B4D4A /* SSHManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHManagerApp.swift; path = Sources/SSHManager/SSHManagerApp.swift; sourceTree = "<group>"; };
-		6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHHost.swift; path = Sources/SSHManager/Models/SSHHost.swift; sourceTree = "<group>"; };
-		6C83EC112A8E4F7D004B4D4A /* SSHConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigManager.swift; path = Sources/SSHManager/Services/SSHConfigManager.swift; sourceTree = "<group>"; };
-		6C83EC132A8E4F7D004B4D4A /* SSHConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConnector.swift; path = Sources/SSHManager/Services/SSHConnector.swift; sourceTree = "<group>"; };
-		6C83EC152A8E4F7D004B4D4A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = Sources/SSHManager/Views/ContentView.swift; sourceTree = "<group>"; };
-		6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostEditorView.swift; path = Sources/SSHManager/Views/HostEditorView.swift; sourceTree = "<group>"; };
-		6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostDetailView.swift; path = Sources/SSHManager/Views/HostDetailView.swift; sourceTree = "<group>"; };
-		6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigParser.swift; path = Sources/SSHManager/Utils/SSHConfigParser.swift; sourceTree = "<group>"; };
-		6C83EC2B2A8E4F7D004B4D4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Sources/SSHManager/Assets.xcassets; sourceTree = "<group>"; };
-		6C83EC2C2A8E4F7D004B4D4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Sources/SSHManager/Info.plist; sourceTree = "<group>"; };
+		6C83EC092A8E4F7D004B4D4A /* SSHManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHManagerApp.swift; path = SSHManagerApp.swift; sourceTree = "<group>"; };
+		6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHHost.swift; path = Models/SSHHost.swift; sourceTree = "<group>"; };
+		6C83EC112A8E4F7D004B4D4A /* SSHConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigManager.swift; path = Services/SSHConfigManager.swift; sourceTree = "<group>"; };
+		6C83EC132A8E4F7D004B4D4A /* SSHConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConnector.swift; path = Services/SSHConnector.swift; sourceTree = "<group>"; };
+		6C83EC152A8E4F7D004B4D4A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = Views/ContentView.swift; sourceTree = "<group>"; };
+		6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostEditorView.swift; path = Views/HostEditorView.swift; sourceTree = "<group>"; };
+		6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostDetailView.swift; path = Views/HostDetailView.swift; sourceTree = "<group>"; };
+		6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigParser.swift; path = Utils/SSHConfigParser.swift; sourceTree = "<group>"; };
+		6C83EC2B2A8E4F7D004B4D4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Assets.xcassets; sourceTree = "<group>"; };
+		6C83EC2C2A8E4F7D004B4D4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
