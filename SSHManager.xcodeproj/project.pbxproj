@@ -113,7 +113,7 @@
 /* Begin PBXNativeTarget section */
 		6C83EC062A8E4F7D004B4D4A /* SSHManager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6C83EC282A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */;
+			buildConfigurationList = 6C83EC292A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */;
 			buildPhases = (
 				6C83EC032A8E4F7D004B4D4A /* Sources */,
 				6C83EC042A8E4F7D004B4D4A /* Frameworks */,
@@ -328,7 +328,7 @@
 			defaultConfigurationName = "Release";
 			name = "Build configuration list for PBXProject \"SSHManager\"";
 		};
-		6C83EC282A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */ = {
+		6C83EC292A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6C83EC272A8E4F7D004B4D4A /* Debug */,
