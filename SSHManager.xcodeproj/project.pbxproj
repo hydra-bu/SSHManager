@@ -325,7 +325,7 @@
 				6C83EC282A8E4F7D004B4D4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release";
 			name = "Build configuration list for PBXProject \"SSHManager\"";
 		};
 		6C83EC282A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */ = {
@@ -335,7 +335,7 @@
 				6C83EC282A8E4F7D004B4D4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Release";
 			name = "Build configuration list for PBXNativeTarget \"SSHManager\"";
 		};
 /* End XCConfigurationList section */
