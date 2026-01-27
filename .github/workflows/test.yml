@@ -21,7 +21,6 @@ jobs:
 
     - name: Run Build Test
       run: |
-        cd SSHManager
         # 尝试编译项目以确保代码没有语法错误
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
@@ -37,7 +36,6 @@ jobs:
       run: |
         # 检查SwiftLint是否可用，如果可用则运行检查
         if command -v swiftlint >/dev/null 2>&1; then
-          cd SSHManager
           swiftlint --strict
         else
           echo "SwiftLint not found, skipping linting"
@@ -45,7 +43,6 @@ jobs:
 
     - name: List Build Products
       run: |
-        cd SSHManager
         if [ -d "SSHManager.xcarchive" ]; then
           echo "Build archive exists"
           ls -la SSHManager.xcarchive/

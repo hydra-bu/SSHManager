@@ -20,7 +20,6 @@ jobs:
 
     - name: Build Project
       run: |
-        cd SSHManager
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
           -destination 'platform=macOS' \
@@ -33,7 +32,6 @@ jobs:
 
     - name: Archive Application
       run: |
-        cd SSHManager
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
           -destination 'platform=macOS' \
@@ -47,7 +45,6 @@ jobs:
 
     - name: Export Application
       run: |
-        cd SSHManager
         xcodebuild -exportArchive \
           -archivePath "SSHManager.xcarchive" \
           -exportPath "." \
@@ -59,13 +56,12 @@ jobs:
 
     - name: Create DMG
       run: |
-        cd SSHManager
         hdiutil create -volname "SSHManager" -srcfolder "SSHManager.app" -ov -format UDZO "SSHManager.dmg"
 
     - name: Create Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "SSHManager/SSHManager.dmg,SSHManager/SSHManager.app"
+        artifacts: "SSHManager.dmg,SSHManager.app"
         token: ${{ secrets.GITHUB_TOKEN }}
         name: "Release ${{ github.ref_name }}"
         tag: ${{ github.ref_name }}

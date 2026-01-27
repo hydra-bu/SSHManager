@@ -22,7 +22,6 @@ jobs:
 
     - name: Build Project
       run: |
-        cd SSHManager
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
           -destination 'platform=macOS' \
@@ -35,7 +34,6 @@ jobs:
 
     - name: Archive Application
       run: |
-        cd SSHManager
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
           -destination 'platform=macOS' \
@@ -49,7 +47,6 @@ jobs:
 
     - name: Export Application
       run: |
-        cd SSHManager
         xcodebuild -exportArchive \
           -archivePath "SSHManager.xcarchive" \
           -exportPath "." \
@@ -63,17 +60,16 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: SSH-Manager-App
-        path: SSHManager/SSHManager.app
+        path: SSHManager.app
         retention-days: 30
 
     - name: Create DMG
       run: |
-        cd SSHManager
         hdiutil create -volname "SSHManager" -srcfolder "SSHManager.app" -ov -format UDZO "SSHManager.dmg"
 
     - name: Upload DMG
       uses: actions/upload-artifact@v4
       with:
         name: SSH-Manager-DMG
-        path: SSHManager/SSHManager.dmg
+        path: SSHManager.dmg
         retention-days: 30
