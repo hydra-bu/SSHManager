@@ -1,0 +1,54 @@
+name: Test SSH Manager
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.2'
+
+    - name: Run Build Test
+      run: |
+        cd SSHManager
+        # 尝试编译项目以确保代码没有语法错误
+        xcodebuild -project SSHManager.xcodeproj \
+          -scheme SSHManager \
+          -destination 'platform=macOS' \
+          build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO | xcpretty
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: Run SwiftLint (if available)
+      run: |
+        # 检查SwiftLint是否可用，如果可用则运行检查
+        if command -v swiftlint >/dev/null 2>&1; then
+          cd SSHManager
+          swiftlint --strict
+        else
+          echo "SwiftLint not found, skipping linting"
+        fi
+
+    - name: List Build Products
+      run: |
+        cd SSHManager
+        if [ -d "SSHManager.xcarchive" ]; then
+          echo "Build archive exists"
+          ls -la SSHManager.xcarchive/
+        else
+          echo "Build archive does not exist"
+        fi

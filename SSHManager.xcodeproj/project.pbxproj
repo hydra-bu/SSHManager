@@ -1,0 +1,372 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6C83EC0A2A8E4F7D004B4D4A /* SSHManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC092A8E4F7D004B4D4A /* SSHManagerApp.swift */; };
+		6C83EC102A8E4F7D004B4D4A /* SSHHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */; };
+		6C83EC122A8E4F7D004B4D4A /* SSHConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC112A8E4F7D004B4D4A /* SSHConfigManager.swift */; };
+		6C83EC142A8E4F7D004B4D4A /* SSHConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC132A8E4F7D004B4D4A /* SSHConnector.swift */; };
+		6C83EC162A8E4F7D004B4D4A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC152A8E4F7D004B4D4A /* ContentView.swift */; };
+		6C83EC182A8E4F7D004B4D4A /* HostEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */; };
+		6C83EC1A2A8E4F7D004B4D4A /* HostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */; };
+		6C83EC1C2A8E4F7D004B4D4A /* SSHConfigParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6C83EC092A8E4F7D004B4D4A /* SSHManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHManagerApp.swift; path = SSHManagerApp.swift; sourceTree = "<group>"; };
+		6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHHost.swift; path = Models/SSHHost.swift; sourceTree = "<group>"; };
+		6C83EC112A8E4F7D004B4D4A /* SSHConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigManager.swift; path = Services/SSHConfigManager.swift; sourceTree = "<group>"; };
+		6C83EC132A8E4F7D004B4D4A /* SSHConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConnector.swift; path = Services/SSHConnector.swift; sourceTree = "<group>"; };
+		6C83EC152A8E4F7D004B4D4A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = Views/ContentView.swift; sourceTree = "<group>"; };
+		6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostEditorView.swift; path = Views/HostEditorView.swift; sourceTree = "<group>"; };
+		6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostDetailView.swift; path = Views/HostDetailView.swift; sourceTree = "<group>"; };
+		6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigParser.swift; path = Utils/SSHConfigParser.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		6C83EC022A8E4F7D004B4D4A /* SSHManager */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC092A8E4F7D004B4D4A /* SSHManagerApp.swift */,
+				6C83EC0E2A8E4F7D004B4D4A /* Models */,
+				6C83EC1D2A8E4F7D004B4D4A /* Services */,
+				6C83EC1E2A8E4F7D004B4D4A /* Views */,
+				6C83EC1F2A8E4F7D004B4D4A /* Utils */,
+				6C83EC202A8E4F7D004B4D4A /* Assets.xcassets */,
+				6C83EC212A8E4F7D004B4D4A /* SSHManager */,
+			);
+			sourceTree = "<group>";
+		};
+		6C83EC0E2A8E4F7D004B4D4A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		6C83EC1D2A8E4F7D004B4D4A /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC112A8E4F7D004B4D4A /* SSHConfigManager.swift */,
+				6C83EC132A8E4F7D004B4D4A /* SSHConnector.swift */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+		6C83EC1E2A8E4F7D004B4D4A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC152A8E4F7D004B4D4A /* ContentView.swift */,
+				6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */,
+				6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		6C83EC1F2A8E4F7D004B4D4A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		6C83EC202A8E4F7D004B4D4A /* Assets.xcassets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		6C83EC212A8E4F7D004B4D4A /* SSHManager */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = SSHManager;
+			sourceTree = "<group>";
+		};
+		6C83EC222A8E4F7D004B4D4A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6C83EC232A8E4F7D004B4D4A /* SSHManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6C83EC232A8E4F7D004B4D4A /* SSHManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6C83EC282A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */;
+			buildPhases = (
+				6C83EC242A8E4F7D004B4D4A /* Sources */,
+				6C83EC252A8E4F7D004B4D4A /* Frameworks */,
+				6C83EC262A8E4F7D004B4D4A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SSHManager;
+			productName = SSHManager;
+			productReference = 6C83EC232A8E4F7D004B4D4A /* SSHManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6C83EC032A8E4F7D004B4D4A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					6C83EC232A8E4F7D004B4D4A = {
+						CreatedOnToolsVersion = 13.0;
+					};
+				};
+			};
+			buildConfigurationList = 6C83EC062A8E4F7D004B4D4A /* Build configuration list for PBXProject "SSHManager" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6C83EC022A8E4F7D004B4D4A /* SSHManager */;
+			productRefGroup = 6C83EC222A8E4F7D004B4D4A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6C83EC232A8E4F7D004B4D4A /* SSHManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6C83EC262A8E4F7D004B4D4A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6C83EC242A8E4F7D004B4D4A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C83EC0A2A8E4F7D004B4D4A /* SSHManagerApp.swift in Sources */,
+				6C83EC102A8E4F7D004B4D4A /* SSHHost.swift in Sources */,
+				6C83EC122A8E4F7D004B4D4A /* SSHConfigManager.swift in Sources */,
+				6C83EC142A8E4F7D004B4D4A /* SSHConnector.swift in Sources */,
+				6C83EC162A8E4F7D004B4D4A /* ContentView.swift in Sources */,
+				6C83EC182A8E4F7D004B4D4A /* HostEditorView.swift in Sources */,
+				6C83EC1A2A8E4F7D004B4D4A /* HostDetailView.swift in Sources */,
+				6C83EC1C2A8E4F7D004B4D4A /* SSHConfigParser.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6C83EC252A8E4F7D004B4D4A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6C83EC272A8E4F7D004B4D4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				NSAppTransportSecurity = {
+					allowLocalNetworking = YES;
+				};
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.SSHManager;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				"SWIFT_SUPPRESS_WARNINGS[sdk=macosx*]" = YES;
+			};
+			name = Debug;
+		};
+		6C83EC282A8E4F7D004B4D4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.SSHManager;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				"SWIFT_SUPPRESS_WARNINGS[sdk=macosx*]" = YES;
+			};
+			name = Release;
+		};
+		6C83EC292A8E4F7D004B4D4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SSHManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		6C83EC2A2A8E4F7D004B4D4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SSHManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6C83EC062A8E4F7D004B4D4A /* Build configuration list for PBXProject "SSHManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C83EC292A8E4F7D004B4D4A /* Debug */,
+				6C83EC2A2A8E4F7D004B4D4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6C83EC282A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C83EC272A8E4F7D004B4D4A /* Debug */,
+				6C83EC282A8E4F7D004B4D4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 6C83EC032A8E4F7D004B4D4A /* Project object */;
+}

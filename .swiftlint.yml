@@ -1,0 +1,85 @@
+# SwiftLint configuration for SSH Manager
+
+# 要启用的规则
+opt_in_rules:
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - explicit_init
+  - file_header
+  - first_where
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - indentation_width
+  - literal_expression_end_indentation
+  - multiline_arguments
+  - multiline_arguments_brackets
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
+  - multiline_parameters_brackets
+  - no_extension_access_modifier
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - prefer_self_type_over_type_of_self
+  - redundant_nil_coalescing
+  - sorted_imports
+  - trailing_closure
+  - unused_import
+  - vertical_parameter_alignment_on_call
+
+# 要禁用的规则
+disabled_rules:
+  - identifier_name
+  - line_length
+  - type_body_length
+  - function_body_length
+  - file_length
+  - type_name
+  - cyclomatic_complexity
+
+# 项目特定配置
+included:
+  - SSHManager
+
+excluded:
+  - SSHManager.xcodeproj
+  - SSHManager.xcworkspace
+
+# 配置规则
+line_length:
+  warning: 150
+  error: 200
+
+identifier_name:
+  min_length: 1
+  max_length: 50
+  excluded:
+    - id
+    - x
+    - y
+    - z
+    - to
+    - in
+
+number_separator:
+  minimum_length: 5
+
+file_header:
+  required_pattern: |
+    \/\/
+    \/\/  This file is part of SSH Manager
+    \/\/  Created on \d{4}-\d{2}-\d{2}
+    \/\/  Copyright \(c\) \d{4} Your Name\. All rights reserved\.
+    \/\/
+
+indentation_width:
+  indentation_width: 4
+
+trailing_closure:
+  only_single_muted_parameter: true

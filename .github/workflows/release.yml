@@ -1,0 +1,73 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.2'
+
+    - name: Build Project
+      run: |
+        cd SSHManager
+        xcodebuild -project SSHManager.xcodeproj \
+          -scheme SSHManager \
+          -destination 'platform=macOS' \
+          clean build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: Archive Application
+      run: |
+        cd SSHManager
+        xcodebuild -project SSHManager.xcodeproj \
+          -scheme SSHManager \
+          -destination 'platform=macOS' \
+          -archivePath "SSHManager.xcarchive" \
+          archive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: Export Application
+      run: |
+        cd SSHManager
+        xcodebuild -exportArchive \
+          -archivePath "SSHManager.xcarchive" \
+          -exportPath "." \
+          -exportFormat APP \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: Create DMG
+      run: |
+        cd SSHManager
+        hdiutil create -volname "SSHManager" -srcfolder "SSHManager.app" -ov -format UDZO "SSHManager.dmg"
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "SSHManager/SSHManager.dmg,SSHManager/SSHManager.app"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: "Release ${{ github.ref_name }}"
+        tag: ${{ github.ref_name }}
+        draft: false
+        prerelease: false
