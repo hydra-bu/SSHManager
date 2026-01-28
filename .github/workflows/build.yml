@@ -20,29 +20,21 @@ jobs:
       with:
         xcode-version: '15.2'
 
-    - name: Archive for macOS (ARM64)
+    - name: Build and Copy App for ARM64
       run: |
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
-          -archivePath build/SSHManager-arm64.xcarchive \
           -destination 'platform=macOS,arch=arm64' \
-          clean archive \
+          clean build \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
 
-    - name: Export DMG for ARM64
+        # Find and copy the app from DerivedData
+        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-arm64.app
+
+    - name: Create DMG for ARM64
       run: |
-        xcodebuild -exportArchive \
-          -archivePath build/SSHManager-arm64.xcarchive \
-          -exportPath build \
-          -exportOptionsPlist ExportOptions.plist \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO
-
-        mv build/SSHManager-arm64.app SSHManager-arm64.app
-
         # Install create-dmg if not available
         if ! command -v create-dmg &> /dev/null; then
           echo "Installing create-dmg..."
@@ -61,32 +53,21 @@ jobs:
           "SSHManager-arm64.dmg" \
           "SSHManager-arm64.app"
 
-        # Remove signature from app to avoid developer ID requirement
-        codesign --remove-signature SSHManager-arm64.app
-
-    - name: Archive for macOS (x86_64)
+    - name: Build and Copy App for x86_64
       run: |
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
-          -archivePath build/SSHManager-x86_64.xcarchive \
           -destination 'platform=macOS,arch=x86_64' \
-          clean archive \
+          clean build \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
 
-    - name: Export DMG for x86_64
+        # Find and copy the app from DerivedData
+        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-x86_64.app
+
+    - name: Create DMG for x86_64
       run: |
-        xcodebuild -exportArchive \
-          -archivePath build/SSHManager-x86_64.xcarchive \
-          -exportPath build \
-          -exportOptionsPlist ExportOptions.plist \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO
-
-        mv build/SSHManager-x86_64.app SSHManager-x86_64.app
-
         # Install create-dmg if not available
         if ! command -v create-dmg &> /dev/null; then
           echo "Installing create-dmg..."
@@ -104,9 +85,6 @@ jobs:
           --hdiutil-verbose \
           "SSHManager-x86_64.dmg" \
           "SSHManager-x86_64.app"
-
-        # Remove signature from app to avoid developer ID requirement
-        codesign --remove-signature SSHManager-x86_64.app
 
     - name: Upload DMG for ARM64
       uses: actions/upload-artifact@v4
