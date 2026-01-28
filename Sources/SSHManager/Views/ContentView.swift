@@ -64,12 +64,16 @@ struct ContentView: View {
         }, content: {
             if let editHost = editingHost {
                 NavigationStack {
-                    HostEditorView(host: editHost) { updatedHost in
+                    // 用 Binding 包装，这样修改会自动更新 editingHost
+                    HostEditorView(host: Binding(
+                        get: { editHost },
+                        set: { newValue in
+                            editingHost = newValue
+                        }
+                    )) { updatedHost in
                         if updatedHost.id == editHost.id {
-                            // 更新现有主机
                             configManager.updateHost(updatedHost)
                         } else {
-                            // 添加新主机
                             configManager.addHost(updatedHost)
                         }
                         selectedHostId = updatedHost.id
