@@ -89,13 +89,15 @@ jobs:
     - name: Upload DMG for ARM64
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-ARM64-DMG
+        name: SSHManager-arm64
         path: SSHManager-arm64.dmg
+        compression-level: 0
         retention-days: 30
 
     - name: Upload DMG for x86_64
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-x86_64-DMG
+        name: SSHManager-x86_64
         path: SSHManager-x86_64.dmg
+        compression-level: 0
         retention-days: 30
