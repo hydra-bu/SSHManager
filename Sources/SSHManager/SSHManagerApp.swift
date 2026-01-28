@@ -9,7 +9,6 @@ struct SSHManagerApp: App {
             ContentView()
                 .environmentObject(configManager)
         }
-        .windowStyle(.document)
         .windowToolbarStyle(.unifiedCompact)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 // SSH主机配置模型
-struct SSHHost: Identifiable, Codable {
+struct SSHHost: Identifiable, Codable, Hashable {
     let id = UUID()
     var alias: String
     var hostname: String
