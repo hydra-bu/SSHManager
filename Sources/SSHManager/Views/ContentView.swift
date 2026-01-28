@@ -31,8 +31,10 @@ struct ContentView: View {
             .safeAreaInset(edge: .bottom) {
                 HStack {
                     Button("添加") {
+                        print("点击添加按钮")
                         editingHost = SSHHost()
                         showingEditSheet = true
+                        print("显示编辑界面: \(showingEditSheet)")
                     }
                     .buttonStyle(.borderedProminent)
 

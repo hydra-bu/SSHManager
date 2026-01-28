@@ -13,12 +13,20 @@ class SSHConfigManager: ObservableObject {
 
     // 加载SSH配置文件
     func loadConfig() {
+        // 检查文件是否存在
+        if !FileManager.default.fileExists(atPath: configPath) {
+            print("SSH配置文件不存在: \(configPath)，创建空配置")
+            self.hosts = []
+            return
+        }
+
         do {
             let content = try String(contentsOfFile: configPath, encoding: .utf8)
             self.hosts = parseSSHConfig(content)
+            print("成功加载 \(hosts.count) 个SSH主机配置")
         } catch {
             print("加载SSH配置失败: \(error)")
-            // 如果配置文件不存在，创建空的hosts数组
+            // 如果配置文件存在但读取失败，创建空的hosts数组
             self.hosts = []
         }
     }

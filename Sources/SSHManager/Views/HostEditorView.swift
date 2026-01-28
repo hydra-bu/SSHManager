@@ -72,7 +72,7 @@ struct HostEditorView: View {
                     }
                 }
             }
-            .navigationTitle(host.id == UUID() ? "新建连接" : "编辑连接")
+            .navigationTitle("编辑连接")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") {
