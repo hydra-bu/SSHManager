@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HostEditorView: View {
-    @Binding var host: SSHHost
+    @State private var host: SSHHost
     let onSave: (SSHHost) -> Void
 
     @Environment(\.dismiss) private var dismiss

@@ -59,25 +59,19 @@ struct ContentView: View {
                 EmptyDetailView()
             }
         }
-        .sheet(isPresented: $showingEditSheet, onDismiss: {
+        .sheet(item: $editingHost, onDismiss: {
             editingHost = nil
-        }, content: {
-            if let editHost = editingHost {
-                NavigationStack {
-                    // 用 Binding 包装，这样修改会自动更新 editingHost
-                    HostEditorView(host: Binding(
-                        get: { editHost },
-                        set: { newValue in
-                            editingHost = newValue
-                        }
-                    )) { updatedHost in
-                        if updatedHost.id == editHost.id {
-                            configManager.updateHost(updatedHost)
-                        } else {
-                            configManager.addHost(updatedHost)
-                        }
-                        selectedHostId = updatedHost.id
+        }, content: { editHost in
+            NavigationStack {
+                // 创建临时副本进行编辑
+                HostEditorView(host: editHost) { updatedHost in
+                    // 保存回调
+                    if updatedHost.id == editHost.id {
+                        configManager.updateHost(updatedHost)
+                    } else {
+                        configManager.addHost(updatedHost)
                     }
+                    selectedHostId = updatedHost.id
                 }
             }
         })
