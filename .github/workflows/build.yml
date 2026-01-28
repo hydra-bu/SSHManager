@@ -57,10 +57,14 @@ jobs:
             <key>destination</key>
             <string>export</string>
             <key>teamID</key>
-            <string>DEVELOPER_ID</string>
+            <string></string>
         </dict>
         </plist>
         EOF
+
+        # Debug: Show the content of the export options plist
+        echo "Export options plist content:"
+        cat exportOptions.plist
 
     - name: Export Application
       run: |
