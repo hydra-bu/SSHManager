@@ -53,11 +53,9 @@ jobs:
         <plist version="1.0">
         <dict>
             <key>method</key>
-            <string>developer-id</string>
+            <string>ad-hoc</string>
             <key>destination</key>
             <string>export</string>
-            <key>teamID</key>
-            <string></string>
         </dict>
         </plist>
         EOF
