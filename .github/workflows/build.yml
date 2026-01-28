@@ -62,7 +62,23 @@ jobs:
 
     - name: Create DMG
       run: |
-        hdiutil create -volname "SSHManager" -srcfolder "SSHManager.app" -ov -format UDZO "SSHManager.dmg"
+        # Install create-dmg if not available
+        if ! command -v create-dmg &> /dev/null; then
+          echo "Installing create-dmg..."
+          brew install create-dmg
+        fi
+
+        # Create a professional DMG with drag-and-drop interface
+        create-dmg \
+          --volname "SSHManager" \
+          --window-pos 200 120 \
+          --window-size 600 400 \
+          --icon-size 100 \
+          --icon "SSHManager.app" 150 190 \
+          --app-drop-link 450 190 \
+          --hdiutil-verbose \
+          "SSHManager.dmg" \
+          "SSHManager.app"
 
     - name: Upload DMG
       uses: actions/upload-artifact@v4
