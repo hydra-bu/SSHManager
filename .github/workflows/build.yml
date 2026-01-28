@@ -20,69 +20,98 @@ jobs:
       with:
         xcode-version: '15.2'
 
-    - name: Build Project
+    - name: Archive for macOS (ARM64)
       run: |
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
-          -destination 'platform=macOS' \
-          clean build \
+          -archivePath build/SSHManager-arm64.xcarchive \
+          -destination 'platform=macOS,arch=arm64' \
+          clean archive \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
-      env:
-        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
 
-    - name: Find Built Application
+    - name: Export DMG for ARM64
       run: |
-        # Find the built application in the DerivedData directory
-        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 > app_path.txt
-        if [ ! -s app_path.txt ]; then
-          echo "ERROR: Could not find built SSHManager.app"
-          exit 1
-        fi
-        APP_PATH=$(cat app_path.txt)
-        echo "Found app at: $APP_PATH"
-        cp -r "$APP_PATH" ./SSHManager.app
+        xcodebuild -exportArchive \
+          -archivePath build/SSHManager-arm64.xcarchive \
+          -exportPath build \
+          -exportOptionsPlist ExportOptions.plist \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
 
-    - name: Verify Application
-      run: |
-        if [ ! -d "SSHManager.app" ]; then
-          echo "ERROR: SSHManager.app was not created"
-          exit 1
-        fi
-        echo "SSHManager.app created successfully"
-        ls -la SSHManager.app
+        mv build/SSHManager-arm64.app SSHManager-arm64.app
 
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: SSH-Manager-App
-        path: SSHManager.app
-        retention-days: 30
-
-    - name: Create DMG
-      run: |
         # Install create-dmg if not available
         if ! command -v create-dmg &> /dev/null; then
           echo "Installing create-dmg..."
           brew install create-dmg
         fi
 
-        # Create a professional DMG with drag-and-drop interface
+        # Create DMG for ARM64
         create-dmg \
           --volname "SSHManager" \
           --window-pos 200 120 \
           --window-size 600 400 \
           --icon-size 100 \
-          --icon "SSHManager.app" 150 190 \
+          --icon "SSHManager-arm64.app" 150 190 \
           --app-drop-link 450 190 \
           --hdiutil-verbose \
-          "SSHManager.dmg" \
-          "SSHManager.app"
+          "SSHManager-arm64.dmg" \
+          "SSHManager-arm64.app"
 
-    - name: Upload DMG
+    - name: Archive for macOS (x86_64)
+      run: |
+        xcodebuild -project SSHManager.xcodeproj \
+          -scheme SSHManager \
+          -archivePath build/SSHManager-x86_64.xcarchive \
+          -destination 'platform=macOS,arch=x86_64' \
+          clean archive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Export DMG for x86_64
+      run: |
+        xcodebuild -exportArchive \
+          -archivePath build/SSHManager-x86_64.xcarchive \
+          -exportPath build \
+          -exportOptionsPlist ExportOptions.plist \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+
+        mv build/SSHManager-x86_64.app SSHManager-x86_64.app
+
+        # Install create-dmg if not available
+        if ! command -v create-dmg &> /dev/null; then
+          echo "Installing create-dmg..."
+          brew install create-dmg
+        fi
+
+        # Create DMG for x86_64
+        create-dmg \
+          --volname "SSHManager" \
+          --window-pos 200 120 \
+          --window-size 600 400 \
+          --icon-size 100 \
+          --icon "SSHManager-x86_64.app" 150 190 \
+          --app-drop-link 450 190 \
+          --hdiutil-verbose \
+          "SSHManager-x86_64.dmg" \
+          "SSHManager-x86_64.app"
+
+    - name: Upload DMG for ARM64
       uses: actions/upload-artifact@v4
       with:
-        name: SSH-Manager-DMG
-        path: SSHManager.dmg
+        name: SSHManager-ARM64-DMG
+        path: SSHManager-arm64.dmg
+        retention-days: 30
+
+    - name: Upload DMG for x86_64
+      uses: actions/upload-artifact@v4
+      with:
+        name: SSHManager-x86_64-DMG
+        path: SSHManager-x86_64.dmg
         retention-days: 30
