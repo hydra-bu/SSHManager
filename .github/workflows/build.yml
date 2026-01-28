@@ -32,46 +32,26 @@ jobs:
       env:
         DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
 
-    - name: Archive Application
+    - name: Find Built Application
       run: |
-        xcodebuild -project SSHManager.xcodeproj \
-          -scheme SSHManager \
-          -destination 'platform=macOS' \
-          -archivePath "SSHManager.xcarchive" \
-          archive \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO
-      env:
-        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+        # Find the built application in the DerivedData directory
+        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 > app_path.txt
+        if [ ! -s app_path.txt ]; then
+          echo "ERROR: Could not find built SSHManager.app"
+          exit 1
+        fi
+        APP_PATH=$(cat app_path.txt)
+        echo "Found app at: $APP_PATH"
+        cp -r "$APP_PATH" ./SSHManager.app
 
-    - name: Create Export Options Plist
+    - name: Verify Application
       run: |
-        tee exportOptions.plist > /dev/null << 'EOF'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>method</key>
-            <string>development</string>
-            <key>destination</key>
-            <string>export</string>
-        </dict>
-        </plist>
-        EOF
-
-        # Debug: Show the content of the export options plist
-        echo "Export options plist content:"
-        cat exportOptions.plist
-
-    - name: Export Application
-      run: |
-        xcodebuild -exportArchive \
-          -archivePath "SSHManager.xcarchive" \
-          -exportPath "." \
-          -exportOptionsPlist "exportOptions.plist"
-      env:
-        DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+        if [ ! -d "SSHManager.app" ]; then
+          echo "ERROR: SSHManager.app was not created"
+          exit 1
+        fi
+        echo "SSHManager.app created successfully"
+        ls -la SSHManager.app
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
