@@ -17,7 +17,7 @@ struct SSHManagerApp: App {
                 }
             }
             CommandGroup(after: .appInfo) {
-                Button("退出", action: { NSApp.terminate() })
+                Button("退出", action: { NSApp.terminate(nil) })
                     .keyboardShortcut("q")
             }
         }
