@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HostEditorView: View {
-    @State var host: SSHHost
+    @Binding var host: SSHHost
     let onSave: (SSHHost) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -106,6 +106,6 @@ struct HostEditorView: View {
 
 struct HostEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        HostEditorView(host: SSHHost(alias: "test", hostname: "192.168.1.100", user: "admin")) { _ in }
+        HostEditorView(host: .constant(SSHHost(alias: "test", hostname: "192.168.1.100", user: "admin"))) { _ in }
     }
 }

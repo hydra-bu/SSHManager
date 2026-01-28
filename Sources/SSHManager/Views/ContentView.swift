@@ -49,26 +49,23 @@ struct ContentView: View {
             }
         } detail: {
             // 右侧：详细信息或编辑
-            if let selectedHostId = selectedHostId,
-               let host = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                HostDetailView(host: host)
-            } else {
-                VStack {
-                    Image(systemName: "server.rack")
-                        .font(.system(size: 64))
-                        .foregroundColor(.gray)
-                    Text("选择一个主机进行编辑")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+            if let selectedHostId = selectedHostId {
+                if let host = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                    HostDetailView(host: host)
+                } else {
+                    EmptyDetailView()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                EmptyDetailView()
             }
         }
-        .sheet(isPresented: $showingEditSheet, content: {
-            if var editHost = editingHost {
+        .sheet(isPresented: $showingEditSheet, onDismiss: {
+            editingHost = nil
+        }, content: {
+            if let editHost = editingHost {
                 NavigationStack {
                     HostEditorView(host: editHost) { updatedHost in
-                        if updatedHost.id == editingHost?.id {
+                        if updatedHost.id == editHost.id {
                             // 更新现有主机
                             configManager.updateHost(updatedHost)
                         } else {
@@ -76,9 +73,6 @@ struct ContentView: View {
                             configManager.addHost(updatedHost)
                         }
                         selectedHostId = updatedHost.id
-                    }
-                    .onDisappear {
-                        editingHost = nil
                     }
                 }
             }
@@ -88,6 +82,21 @@ struct ContentView: View {
     private func connect(to host: SSHHost) {
         let connector = SSHConnector()
         connector.connect(to: host)
+    }
+}
+
+// 空状态视图
+struct EmptyDetailView: View {
+    var body: some View {
+        VStack {
+            Image(systemName: "server.rack")
+                .font(.system(size: 64))
+                .foregroundColor(.gray)
+            Text("选择一个主机进行编辑")
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
