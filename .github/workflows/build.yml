@@ -61,6 +61,9 @@ jobs:
           "SSHManager-arm64.dmg" \
           "SSHManager-arm64.app"
 
+        # Remove signature from app to avoid developer ID requirement
+        codesign --remove-signature SSHManager-arm64.app
+
     - name: Archive for macOS (x86_64)
       run: |
         xcodebuild -project SSHManager.xcodeproj \
@@ -101,6 +104,9 @@ jobs:
           --hdiutil-verbose \
           "SSHManager-x86_64.dmg" \
           "SSHManager-x86_64.app"
+
+        # Remove signature from app to avoid developer ID requirement
+        codesign --remove-signature SSHManager-x86_64.app
 
     - name: Upload DMG for ARM64
       uses: actions/upload-artifact@v4
