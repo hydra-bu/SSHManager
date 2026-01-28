@@ -53,7 +53,7 @@ jobs:
         <plist version="1.0">
         <dict>
             <key>method</key>
-            <string>ad-hoc</string>
+            <string>development</string>
             <key>destination</key>
             <string>export</string>
         </dict>
