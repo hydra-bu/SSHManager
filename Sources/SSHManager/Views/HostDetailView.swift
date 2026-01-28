@@ -130,7 +130,6 @@ struct HostDetailView: View {
             .padding()
         }
         .navigationTitle(host.alias)
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func generateSSHConfig() -> String {
@@ -181,7 +180,6 @@ struct HostDetailView: View {
 extension View {
     func popoverTip(_ text: String, arrowEdge: Edge = .bottom, @ViewBuilder accessory: () -> some View) -> some View {
         self
-            .hoverEffect()
             .contextMenu {
                 Text(text)
                     .font(.caption)
