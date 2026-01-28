@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HostEditorView: View {
-    @State private var host: SSHHost
+    @Binding var host: SSHHost
     let onSave: (SSHHost) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -72,7 +72,7 @@ struct HostEditorView: View {
                     }
                 }
             }
-            .navigationTitle("编辑连接")
+            .navigationTitle(host.id == UUID() ? "新增连接" : "编辑连接")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") {
