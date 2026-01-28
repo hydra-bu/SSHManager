@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var configManager: SSHConfigManager
-    @State private var selectedHost: SSHHost?
+    @State private var selectedHostId: UUID?
     @State private var showingAddSheet = false
     @State private var showingEditSheet = false
     @State private var editingHost: SSHHost?
@@ -10,22 +10,20 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             // 左侧：主机列表
-            List(selection: $selectedHost) {
-                ForEach(configManager.hosts) { host in
-                    HStack {
-                        Image(systemName: "server.rack")
-                            .foregroundColor(.blue)
-                        VStack(alignment: .leading) {
-                            Text(host.alias)
-                                .font(.headline)
-                            Text(host.getUserAtHost())
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
+            List($configManager.hosts, selection: $selectedHostId) { $host in
+                HStack {
+                    Image(systemName: "server.rack")
+                        .foregroundColor(.blue)
+                    VStack(alignment: .leading) {
+                        Text(host.alias)
+                            .font(.headline)
+                        Text(host.getUserAtHost())
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .tag(host as SSHHost?)
+                    Spacer()
                 }
+                .tag(host.id)
             }
             .navigationSplitViewColumnWidth(min: 250, ideal: 300)
             .safeAreaInset(edge: .bottom) {
@@ -38,7 +36,8 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
 
-                    if let selectedHost = selectedHost {
+                    if let selectedHostId = selectedHostId,
+                       let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
                         Button("连接") {
                             connect(to: selectedHost)
                         }
@@ -50,7 +49,8 @@ struct ContentView: View {
             }
         } detail: {
             // 右侧：详细信息或编辑
-            if let host = selectedHost {
+            if let selectedHostId = selectedHostId,
+               let host = configManager.hosts.first(where: { $0.id == selectedHostId }) {
                 HostDetailView(host: host)
             } else {
                 VStack {
@@ -75,7 +75,7 @@ struct ContentView: View {
                             // 添加新主机
                             configManager.addHost(updatedHost)
                         }
-                        selectedHost = updatedHost
+                        selectedHostId = updatedHost.id
                     }
                     .onDisappear {
                         editingHost = nil
