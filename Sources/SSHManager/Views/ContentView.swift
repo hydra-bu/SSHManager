@@ -6,10 +6,17 @@ struct ContentView: View {
     @State private var editingHost: SSHHost?
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: $selectedHostId) {
-                ForEach(configManager.hosts) { host in
-                    HStack {
+        VStack(spacing: 0) {
+            AppTopBar(
+                selectedHostId: $selectedHostId,
+                editingHost: $editingHost
+            )
+            .environmentObject(configManager)
+            
+            NavigationSplitView {
+                List(selection: $selectedHostId) {
+                    ForEach(configManager.hosts) { host in
+                        HStack {
                         Image(systemName: "server.rack")
                             .foregroundColor(.blue)
                         VStack(alignment: .leading) {
@@ -45,59 +52,32 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("主机列表")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        addNewHost()
-                    } label: {
-                        Label("添加主机", systemImage: "plus")
-                    }
-                    .help("添加新主机")
-                }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        if let selectedHostId = selectedHostId,
-                           let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                            editingHost = selectedHost
-                        }
-                    } label: {
-                        Label("编辑主机", systemImage: "pencil")
-                    }
-                    .disabled(selectedHostId == nil)
-                    .help("编辑选中的主机")
-                }
-            }
-        } detail: {
-            if let selectedHostId = selectedHostId,
-               let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                HostDetailView(host: selectedHost)
-                    .toolbar {
-                        ToolbarItem {
-                            Button {
-                                connect(to: selectedHost)
-                            } label: {
-                                Label("连接", systemImage: "terminal")
+                .navigationTitle("主机列表")
+            } detail: {
+                if let selectedHostId = selectedHostId,
+                   let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                    HostDetailView(host: selectedHost)
+                        .toolbar {
+                            ToolbarItem {
+                                Button {
+                                    connect(to: selectedHost)
+                                } label: {
+                                    Label("连接", systemImage: "terminal")
+                                }
                             }
                         }
-                    }
-            } else {
-                EmptyDetailView()
+                } else {
+                    EmptyDetailView()
+                }
             }
-        }
-        .sheet(item: $editingHost) { host in
-            HostEditorView(host: host)
-                .environmentObject(configManager)
+            .sheet(item: $editingHost) { host in
+                HostEditorView(host: host)
+                    .environmentObject(configManager)
+            }
         }
     }
 
-    private func addNewHost() {
-        let newHost = SSHHost()
-        configManager.addHost(newHost)
-        selectedHostId = newHost.id
-        editingHost = newHost
-    }
+    
 
     private func connect(to host: SSHHost) {
         let connector = SSHConnector()
