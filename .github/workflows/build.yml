@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-14
@@ -20,7 +23,7 @@ jobs:
       with:
         xcode-version: '15.2'
 
-    - name: Build and Copy App for ARM64
+    - name: Build App (ARM64)
       run: |
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
@@ -29,19 +32,16 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
-
-        # Find and copy the app from DerivedData
+        
+        rm -rf ./SSHManager.app
         find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager.app
 
-    - name: Create DMG for ARM64
+    - name: Create DMG (ARM64)
       run: |
-        # Install create-dmg if not available
         if ! command -v create-dmg &> /dev/null; then
-          echo "Installing create-dmg..."
           brew install create-dmg
         fi
-
-        # Create DMG for ARM64
+        rm -f SSHManager.dmg
         create-dmg \
           --volname "SSHManager" \
           --window-pos 200 120 \
@@ -49,11 +49,10 @@ jobs:
           --icon-size 100 \
           --icon "SSHManager.app" 150 190 \
           --app-drop-link 450 190 \
-          --hdiutil-verbose \
           "SSHManager.dmg" \
           "SSHManager.app"
 
-    - name: Build and Copy App for x86_64
+    - name: Build App (x86_64)
       run: |
         xcodebuild -project SSHManager.xcodeproj \
           -scheme SSHManager \
@@ -62,19 +61,16 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
-
-        # Find and copy the app from DerivedData
+        
+        rm -rf ./SSHManager-x64.app
         find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-x64.app
 
-    - name: Create DMG for x86_64
+    - name: Create DMG (x86_64)
       run: |
-        # Install create-dmg if not available
         if ! command -v create-dmg &> /dev/null; then
-          echo "Installing create-dmg..."
           brew install create-dmg
         fi
-
-        # Create DMG for x86_64
+        rm -f SSHManager-x64.dmg
         create-dmg \
           --volname "SSHManager" \
           --window-pos 200 120 \
@@ -82,22 +78,46 @@ jobs:
           --icon-size 100 \
           --icon "SSHManager-x64.app" 150 190 \
           --app-drop-link 450 190 \
-          --hdiutil-verbose \
           "SSHManager-x64.dmg" \
           "SSHManager-x64.app"
 
-    - name: Upload DMG for ARM64
+    - name: Upload ARM64 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-ARM64-DMG
+        name: SSHManager-ARM64
         path: SSHManager.dmg
-        compression-level: 0
-        retention-days: 30
 
-    - name: Upload DMG for x86_64
+    - name: Upload x64 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-x64-DMG
+        name: SSHManager-x64
         path: SSHManager-x64.dmg
-        compression-level: 0
-        retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - name: Download ARM64
+        uses: actions/download-artifact@v4
+        with:
+          name: SSHManager-ARM64
+          path: ./release-assets
+      - name: Download x64
+        uses: actions/download-artifact@v4
+        with:
+          name: SSHManager-x64
+          path: ./release-assets
+      - name: Create/Update Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes || true
+          git tag -d latest || true
+          git push origin :refs/tags/latest || true
+          gh release create latest \
+            --title "Latest Build" \
+            --notes "直接下载底部的 .dmg 文件。注意：GitHub Actions 的 Artifacts 总是会自动打包成 zip，请在此 Release 页面直接下载 .dmg 文件。" \
+            --prerelease \
+            ./release-assets/SSHManager.dmg \
+            ./release-assets/SSHManager-x64.dmg

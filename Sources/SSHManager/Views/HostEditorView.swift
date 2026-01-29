@@ -15,7 +15,18 @@ struct HostEditorView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            // 自定义标题栏
+            HStack {
+                Text(host.alias.isEmpty && host.hostname.isEmpty ? "新增连接" : "编辑连接")
+                    .font(.headline)
+                Spacer()
+            }
+            .padding()
+            .background(Color(nsColor: .windowBackgroundColor))
+            
+            Divider()
+            
             Form {
                 Section("连接信息") {
                     TextField("别名 (必填)", text: $host.alias)
@@ -75,31 +86,44 @@ struct HostEditorView: View {
                     }
                 }
             }
-            .navigationTitle(host.alias.isEmpty && host.hostname.isEmpty ? "新增连接" : "编辑连接")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { 
-                        if host.alias.isEmpty && host.hostname.isEmpty {
-                            // 如果是新建且未填内容，取消时从列表中移除
-                            configManager.removeHost(host)
-                        }
-                        dismiss() 
-                    }
+            .padding()
+            
+            Divider()
+            
+            // 底部按钮
+            HStack {
+                Button("取消") { 
+                    cancelChanges()
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
-                        saveChanges()
-                        dismiss()
-                    }
-                    .disabled(host.alias.trimmingCharacters(in: .whitespaces).isEmpty || 
-                              host.hostname.trimmingCharacters(in: .whitespaces).isEmpty)
+                .keyboardShortcut(.cancelAction)
+                
+                Spacer()
+                
+                Button("保存") {
+                    saveChanges()
+                    dismiss()
                 }
+                .buttonStyle(.borderedProminent)
+                .disabled(host.alias.trimmingCharacters(in: .whitespaces).isEmpty || 
+                          host.hostname.trimmingCharacters(in: .whitespaces).isEmpty)
+                .keyboardShortcut(.defaultAction)
             }
-            .onAppear {
-                // Initialize options array from host.options
-                options = host.options.map { OptionItem(key: $0.key, value: $0.value) }
-            }
+            .padding()
+            .background(Color(nsColor: .windowBackgroundColor))
         }
+        .frame(minWidth: 500, minHeight: 600)
+        .onAppear {
+            // Initialize options array from host.options
+            options = host.options.map { OptionItem(key: $0.key, value: $0.value) }
+        }
+    }
+    
+    private func cancelChanges() {
+        if host.alias.isEmpty && host.hostname.isEmpty {
+            // 如果是新建且未填内容，取消时从列表中移除
+            configManager.removeHost(host)
+        }
+        dismiss()
     }
     
     private func browseKeyFile() {
@@ -112,6 +136,7 @@ struct HostEditorView: View {
         
         if panel.runModal() == .OK {
             host.identityFile = panel.url?.path ?? ""
+            hasUnsavedChanges = true
         }
     }
     
@@ -119,7 +144,9 @@ struct HostEditorView: View {
         // Sync edited options back to host
         var newDict: [String: String] = [:]
         for opt in options {
-            newDict[opt.key] = opt.value
+            if !opt.key.trimmingCharacters(in: .whitespaces).isEmpty {
+                newDict[opt.key] = opt.value
+            }
         }
         host.options = newDict
         

@@ -3,13 +3,12 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var configManager: SSHConfigManager
     @State private var selectedHostId: UUID?
-    @State private var isEditing = false
-    @State private var editingHostIndex: Int?
+    @State private var editingHost: SSHHost?
 
     var body: some View {
-        NavigationView {
+        NavigationSplitView {
             List(selection: $selectedHostId) {
-                ForEach(Array(configManager.hosts.enumerated()), id: \.element.id) { index, host in
+                ForEach(configManager.hosts) { host in
                     HStack {
                         Image(systemName: "server.rack")
                             .foregroundColor(.blue)
@@ -23,97 +22,81 @@ struct ContentView: View {
                         Spacer()
                     }
                     .tag(host.id)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedHostId = host.id
+                    .contextMenu {
+                        Button("编辑") {
+                            editingHost = host
+                        }
+                        Button("删除", role: .destructive) {
+                            configManager.removeHost(host)
+                        }
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            deleteHost(at: index)
+                            configManager.removeHost(host)
                         } label: {
                             Label("删除", systemImage: "trash")
                         }
                         Button {
-                            editingHostIndex = index
-                            isEditing = true
+                            editingHost = host
                         } label: {
                             Label("编辑", systemImage: "pencil")
                         }
                         .tint(.blue)
                     }
-                    .onTapGesture(count: 2) {
-                        editingHostIndex = index
-                        isEditing = true
-                    }
                 }
             }
-            .safeAreaInset(edge: .bottom) {
-                HStack {
+            .navigationTitle("主机列表")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         addNewHost()
                     } label: {
-                        Label("添加", systemImage: "plus")
+                        Label("添加主机", systemImage: "plus")
                     }
-                    .buttonStyle(.borderedProminent)
-
-                    if let selectedHostId = selectedHostId,
-                       let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                        Button {
-                            connect(to: selectedHost)
-                        } label: {
-                            Label("连接", systemImage: "terminal")
-                        }
-                        .buttonStyle(.bordered)
-                        
-                        Button {
-                            if let index = configManager.hosts.firstIndex(where: { $0.id == selectedHostId }) {
-                                editingHostIndex = index
-                                isEditing = true
-                            }
-                        } label: {
-                            Label("编辑", systemImage: "pencil")
-                        }
-                        .buttonStyle(.bordered)
-                    }
+                    .help("添加新主机")
                 }
-                .padding()
-                .background(.thickMaterial)
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        if let selectedHostId = selectedHostId,
+                           let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                            editingHost = selectedHost
+                        }
+                    } label: {
+                        Label("编辑主机", systemImage: "pencil")
+                    }
+                    .disabled(selectedHostId == nil)
+                    .help("编辑选中的主机")
+                }
             }
-            
-            if let selectedHostId = selectedHostId {
-                if let host = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                    HostDetailView(host: host)
-                } else {
-                    EmptyDetailView()
-                }
+        } detail: {
+            if let selectedHostId = selectedHostId,
+               let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                HostDetailView(host: selectedHost)
+                    .toolbar {
+                        ToolbarItem {
+                            Button {
+                                connect(to: selectedHost)
+                            } label: {
+                                Label("连接", systemImage: "terminal")
+                            }
+                        }
+                    }
             } else {
                 EmptyDetailView()
             }
         }
-        .sheet(isPresented: $isEditing) {
-            if let index = editingHostIndex, index < configManager.hosts.count {
-                HostEditorView(host: configManager.hosts[index])
-                    .environmentObject(configManager)
-            }
+        .sheet(item: $editingHost) { host in
+            HostEditorView(host: host)
+                .environmentObject(configManager)
         }
     }
 
     private func addNewHost() {
         let newHost = SSHHost()
         configManager.addHost(newHost)
-        if let lastIndex = configManager.hosts.indices.last {
-            selectedHostId = configManager.hosts[lastIndex].id
-            editingHostIndex = lastIndex
-            isEditing = true
-        }
-    }
-
-    private func deleteHost(at index: Int) {
-        let host = configManager.hosts[index]
-        configManager.removeHost(host)
-        if selectedHostId == host.id {
-            selectedHostId = nil
-        }
+        selectedHostId = newHost.id
+        editingHost = newHost
     }
 
     private func connect(to host: SSHHost) {
