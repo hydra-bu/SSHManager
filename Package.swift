@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "SSHManager",
     platforms: [
-        .macOS(.v12)
+        .macOS(.v13)
     ],
     products: [
         .executable(name: "SSHManager", targets: ["SSHManager"])

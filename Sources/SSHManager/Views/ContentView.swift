@@ -7,7 +7,7 @@ struct ContentView: View {
     @State private var editingHostIndex: Int?
 
     var body: some View {
-        NavigationSplitView {
+        NavigationView {
             List(selection: $selectedHostId) {
                 ForEach(Array(configManager.hosts.enumerated()), id: \.element.id) { index, host in
                     HStack {
@@ -35,6 +35,7 @@ struct ContentView: View {
                         }
                         Button {
                             editingHostIndex = index
+                            isEditing = true
                         } label: {
                             Label("编辑", systemImage: "pencil")
                         }
@@ -42,7 +43,6 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationSplitViewColumnWidth(min: 250, ideal: 300)
             .safeAreaInset(edge: .bottom) {
                 HStack {
                     Button {
@@ -65,7 +65,7 @@ struct ContentView: View {
                 .padding()
                 .background(.thickMaterial)
             }
-        } detail: {
+            
             if let selectedHostId = selectedHostId {
                 if let host = configManager.hosts.first(where: { $0.id == selectedHostId }) {
                     HostDetailView(host: host)
@@ -77,20 +77,9 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isEditing) {
-            if let index = editingHostIndex {
-                NavigationStack {
-                    HostEditorView(host: Binding(
-                        get: { configManager.hosts[index] },
-                        set: { newHost in
-                            configManager.hosts[index] = newHost
-                            configManager.saveConfig()
-                        }
-                    )) { updatedHost in
-                        configManager.hosts[index] = updatedHost
-                        configManager.saveConfig()
-                        isEditing = false
-                    }
-                }
+            if let index = editingHostIndex, index < configManager.hosts.count {
+                HostEditorView(host: configManager.hosts[index])
+                    .environmentObject(configManager)
             }
         }
     }

@@ -4,7 +4,7 @@ import Foundation
 class SSHConfigParser {
     static func parse(_ content: String) -> [SSHHost] {
         let lines = content.components(separatedBy: .newlines)
-        var state = ConfigParserState()
+        let state = ConfigParserState()
 
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
@@ -30,7 +30,7 @@ class SSHConfigParser {
                 state.inHostBlock = true
             } else if state.inHostBlock, let currentHost = state.currentHost {
                 // 在Host块内，设置主机属性
-                var updatedHost = currentHost
+                let updatedHost = currentHost
 
                 switch key {
                 case "hostname":
