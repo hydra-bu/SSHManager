@@ -41,6 +41,10 @@ struct ContentView: View {
                         }
                         .tint(.blue)
                     }
+                    .onTapGesture(count: 2) {
+                        editingHostIndex = index
+                        isEditing = true
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -58,6 +62,16 @@ struct ContentView: View {
                             connect(to: selectedHost)
                         } label: {
                             Label("连接", systemImage: "terminal")
+                        }
+                        .buttonStyle(.bordered)
+                        
+                        Button {
+                            if let index = configManager.hosts.firstIndex(where: { $0.id == selectedHostId }) {
+                                editingHostIndex = index
+                                isEditing = true
+                            }
+                        } label: {
+                            Label("编辑", systemImage: "pencil")
                         }
                         .buttonStyle(.bordered)
                     }

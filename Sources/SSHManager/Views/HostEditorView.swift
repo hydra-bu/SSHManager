@@ -18,9 +18,9 @@ struct HostEditorView: View {
         NavigationView {
             Form {
                 Section("连接信息") {
-                    TextField("别名", text: $host.alias)
+                    TextField("别名 (必填)", text: $host.alias)
                         .onChange(of: host.alias) { _ in hasUnsavedChanges = true }
-                    TextField("主机名或IP", text: $host.hostname)
+                    TextField("主机名或IP (必填)", text: $host.hostname)
                         .onChange(of: host.hostname) { _ in hasUnsavedChanges = true }
                     HStack {
                         TextField("用户名", text: $host.user)
@@ -49,18 +49,19 @@ struct HostEditorView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-ForEach($options) { $opt in
-                                 HStack {
-                                     TextField("选项名", text: $opt.key)
-                                     TextField("值", text: $opt.value)
-                                     Button("删除") {
-                                         if let idx = options.firstIndex(where: { $0.id == opt.id }) {
-                                             options.remove(at: idx)
-                                         }
-                                     }
-                                     .foregroundColor(.red)
-                                 }
-                             }
+                            ForEach($options) { $opt in
+                                HStack {
+                                    TextField("选项名", text: $opt.key)
+                                    TextField("值", text: $opt.value)
+                                    Button("删除") {
+                                        if let idx = options.firstIndex(where: { $0.id == opt.id }) {
+                                            options.remove(at: idx)
+                                            hasUnsavedChanges = true
+                                        }
+                                    }
+                                    .foregroundColor(.red)
+                                }
+                            }
                             
                             HStack {
                                 Spacer()
@@ -74,17 +75,24 @@ ForEach($options) { $opt in
                     }
                 }
             }
-            .navigationTitle(host.alias.isEmpty ? "新增连接" : "编辑连接")
+            .navigationTitle(host.alias.isEmpty && host.hostname.isEmpty ? "新增连接" : "编辑连接")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button("取消") { 
+                        if host.alias.isEmpty && host.hostname.isEmpty {
+                            // 如果是新建且未填内容，取消时从列表中移除
+                            configManager.removeHost(host)
+                        }
+                        dismiss() 
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
                         saveChanges()
                         dismiss()
                     }
-                    .disabled(host.alias.isEmpty || host.hostname.isEmpty)
+                    .disabled(host.alias.trimmingCharacters(in: .whitespaces).isEmpty || 
+                              host.hostname.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .onAppear {

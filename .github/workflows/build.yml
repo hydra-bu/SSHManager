@@ -31,7 +31,7 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
 
         # Find and copy the app from DerivedData
-        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-arm64.app
+        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager.app
 
     - name: Create DMG for ARM64
       run: |
@@ -47,11 +47,11 @@ jobs:
           --window-pos 200 120 \
           --window-size 600 400 \
           --icon-size 100 \
-          --icon "SSHManager-arm64.app" 150 190 \
+          --icon "SSHManager.app" 150 190 \
           --app-drop-link 450 190 \
           --hdiutil-verbose \
-          "SSHManager-arm64.dmg" \
-          "SSHManager-arm64.app"
+          "SSHManager.dmg" \
+          "SSHManager.app"
 
     - name: Build and Copy App for x86_64
       run: |
@@ -64,7 +64,7 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
 
         # Find and copy the app from DerivedData
-        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-x86_64.app
+        find ~/Library/Developer/Xcode/DerivedData -name "SSHManager.app" -type d | head -n 1 | xargs -I {} cp -r {} ./SSHManager-x64.app
 
     - name: Create DMG for x86_64
       run: |
@@ -80,24 +80,24 @@ jobs:
           --window-pos 200 120 \
           --window-size 600 400 \
           --icon-size 100 \
-          --icon "SSHManager-x86_64.app" 150 190 \
+          --icon "SSHManager-x64.app" 150 190 \
           --app-drop-link 450 190 \
           --hdiutil-verbose \
-          "SSHManager-x86_64.dmg" \
-          "SSHManager-x86_64.app"
+          "SSHManager-x64.dmg" \
+          "SSHManager-x64.app"
 
     - name: Upload DMG for ARM64
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-arm64
-        path: SSHManager-arm64.dmg
+        name: SSHManager-ARM64-DMG
+        path: SSHManager.dmg
         compression-level: 0
         retention-days: 30
 
     - name: Upload DMG for x86_64
       uses: actions/upload-artifact@v4
       with:
-        name: SSHManager-x86_64
-        path: SSHManager-x86_64.dmg
+        name: SSHManager-x64-DMG
+        path: SSHManager-x64.dmg
         compression-level: 0
         retention-days: 30
