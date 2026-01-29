@@ -49,6 +49,7 @@ jobs:
           --icon-size 100 \
           --icon "SSHManager.app" 150 190 \
           --app-drop-link 450 190 \
+          --volicon "Sources/SSHManager/Assets.xcassets/AppIcon.icns" \
           "SSHManager.dmg" \
           "SSHManager.app"
 
@@ -78,6 +79,7 @@ jobs:
           --icon-size 100 \
           --icon "SSHManager-x64.app" 150 190 \
           --app-drop-link 450 190 \
+          --volicon "Sources/SSHManager/Assets.xcassets/AppIcon.icns" \
           "SSHManager-x64.dmg" \
           "SSHManager-x64.app"
 
