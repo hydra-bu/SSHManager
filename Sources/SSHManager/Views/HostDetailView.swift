@@ -4,6 +4,7 @@ struct HostDetailView: View {
     let host: SSHHost
     @State private var testResult: ConnectionTestResult?
     @State private var isTesting = false
+    @State private var showCopyToast = false
 
     var body: some View {
         ScrollView {
@@ -68,10 +69,25 @@ struct HostDetailView: View {
 
                 // 终端命令预览
                 GroupBox(label: Label("终端命令", systemImage: "terminal")) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("在终端中执行的命令：")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("在终端中执行的命令：")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            
+                            if showCopyToast {
+                                Text("已复制到剪贴板")
+                                    .font(.caption)
+                                    .foregroundColor(.green)
+                                    .transition(.opacity)
+                            }
+                            
+                            Button(action: copyCommandToClipboard) {
+                                Label("复制命令", systemImage: "doc.on.doc")
+                            }
+                            .buttonStyle(.borderless)
+                        }
 
                         ScrollView(.horizontal) {
                             Text(generateTerminalCommand())
@@ -81,6 +97,10 @@ struct HostDetailView: View {
                                 .cornerRadius(4)
                                 .textSelection(.enabled)
                         }
+                        
+                        Text("复制命令后粘贴到终端即可连接")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
 
@@ -172,6 +192,23 @@ struct HostDetailView: View {
             await MainActor.run {
                 testResult = result
                 isTesting = false
+            }
+        }
+    }
+    
+    private func copyCommandToClipboard() {
+        let command = generateTerminalCommand()
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(command, forType: .string)
+        
+        withAnimation {
+            showCopyToast = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showCopyToast = false
             }
         }
     }

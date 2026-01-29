@@ -3,6 +3,7 @@ import Foundation
 // SSH配置管理器
 class SSHConfigManager: ObservableObject {
     @Published var hosts: [SSHHost] = []
+    @Published var selectedHostId: UUID?
 
     private let configPath: String
 

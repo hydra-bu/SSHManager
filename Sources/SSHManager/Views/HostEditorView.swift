@@ -27,66 +27,118 @@ struct HostEditorView: View {
             
             Divider()
             
-            Form {
-                Section("连接信息") {
-                    TextField("别名 (必填)", text: $host.alias)
-                        .onChange(of: host.alias) { _ in hasUnsavedChanges = true }
-                    TextField("主机名或IP (必填)", text: $host.hostname)
-                        .onChange(of: host.hostname) { _ in hasUnsavedChanges = true }
-                    HStack {
-                        TextField("用户名", text: $host.user)
-                            .onChange(of: host.user) { _ in hasUnsavedChanges = true }
-                        Spacer()
-                        TextField("端口", value: $host.port, formatter: NumberFormatter())
-                            .frame(width: 80)
-                            .onChange(of: host.port) { _ in hasUnsavedChanges = true }
-                    }
-                }
-                
-                Section("认证") {
-                    HStack {
-                        TextField("密钥文件路径", text: $host.identityFile)
-                            .onChange(of: host.identityFile) { _ in hasUnsavedChanges = true }
-                        Button("浏览") {
-                            browseKeyFile()
-                        }
-                    }
-                }
-                
-                Section("高级选项") {
-                    DisclosureGroup("更多SSH选项") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("其他SSH配置选项（每行一个）：")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            ForEach($options) { $opt in
-                                HStack {
-                                    TextField("选项名", text: $opt.key)
-                                    TextField("值", text: $opt.value)
-                                    Button("删除") {
-                                        if let idx = options.firstIndex(where: { $0.id == opt.id }) {
-                                            options.remove(at: idx)
-                                            hasUnsavedChanges = true
-                                        }
-                                    }
-                                    .foregroundColor(.red)
-                                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // 连接信息组
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("连接信息")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        VStack(spacing: 10) {
+                            HStack {
+                                Text("别名")
+                                    .frame(width: 80, alignment: .trailing)
+                                TextField("例如：生产服务器 (必填)", text: $host.alias)
+                                    .textFieldStyle(.roundedBorder)
+                                    .onChange(of: host.alias) { _ in hasUnsavedChanges = true }
                             }
                             
                             HStack {
-                                Spacer()
-                                Button("添加选项") {
-                                    let newKey = "option\(options.count + 1)"
-                                    options.append(OptionItem(key: newKey, value: ""))
-                                    hasUnsavedChanges = true
+                                Text("地址")
+                                    .frame(width: 80, alignment: .trailing)
+                                TextField("主机名或IP (必填)", text: $host.hostname)
+                                    .textFieldStyle(.roundedBorder)
+                                    .onChange(of: host.hostname) { _ in hasUnsavedChanges = true }
+                            }
+                            
+                            HStack {
+                                Text("用户")
+                                    .frame(width: 80, alignment: .trailing)
+                                TextField("用户名", text: $host.user)
+                                    .textFieldStyle(.roundedBorder)
+                                    .onChange(of: host.user) { _ in hasUnsavedChanges = true }
+                                
+                                Text("端口")
+                                TextField("", value: $host.port, formatter: NumberFormatter())
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(width: 60)
+                                    .onChange(of: host.port) { _ in hasUnsavedChanges = true }
+                            }
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(8)
+                    }
+                    
+                    // 认证组
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("认证")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        HStack {
+                            Text("私钥路径")
+                                .frame(width: 80, alignment: .trailing)
+                            TextField("~/.ssh/id_rsa", text: $host.identityFile)
+                                .textFieldStyle(.roundedBorder)
+                                .onChange(of: host.identityFile) { _ in hasUnsavedChanges = true }
+                            Button("浏览") {
+                                browseKeyFile()
+                            }
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(8)
+                    }
+                    
+                    // 高级选项组
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("高级 SSH 选项")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Button(action: {
+                                let newKey = "option\(options.count + 1)"
+                                options.append(OptionItem(key: newKey, value: ""))
+                                hasUnsavedChanges = true
+                            }) {
+                                Label("添加选项", systemImage: "plus.circle")
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                        
+                        if !options.isEmpty {
+                            VStack(spacing: 8) {
+                                ForEach($options) { $opt in
+                                    HStack {
+                                        TextField("键", text: $opt.key)
+                                            .textFieldStyle(.roundedBorder)
+                                            .frame(width: 150)
+                                        TextField("值", text: $opt.value)
+                                            .textFieldStyle(.roundedBorder)
+                                        Button(action: {
+                                            if let idx = options.firstIndex(where: { $0.id == opt.id }) {
+                                                options.remove(at: idx)
+                                                hasUnsavedChanges = true
+                                            }
+                                        }) {
+                                            Image(systemName: "minus.circle")
+                                                .foregroundColor(.red)
+                                        }
+                                        .buttonStyle(.borderless)
+                                    }
                                 }
                             }
+                            .padding()
+                            .background(Color.gray.opacity(0.05))
+                            .cornerRadius(8)
                         }
                     }
                 }
+                .padding()
             }
-            .padding()
             
             Divider()
             
@@ -111,7 +163,7 @@ struct HostEditorView: View {
             .padding()
             .background(Color(nsColor: .windowBackgroundColor))
         }
-        .frame(minWidth: 500, minHeight: 600)
+        .frame(minWidth: 550, minHeight: 400, maxHeight: 700)
         .onAppear {
             // Initialize options array from host.options
             options = host.options.map { OptionItem(key: $0.key, value: $0.value) }
