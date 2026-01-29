@@ -1,14 +1,38 @@
 import SwiftUI
 
 struct HostDetailView: View {
-    let host: SSHHost
-    @State private var testResult: ConnectionTestResult?
-    @State private var isTesting = false
+    @ObservedObject var host: SSHHost
     @State private var showCopyToast = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                // 状态指示器
+                if host.isTesting || host.lastTestResult != nil {
+                    GroupBox(label: Label("连接状态", systemImage: "bolt.horizontal")) {
+                        HStack {
+                            if host.isTesting {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                                Text("正在测试连接...")
+                                    .font(.subheadline)
+                            } else if let result = host.lastTestResult {
+                                switch result {
+                                case .success(let latency):
+                                    Label("在线 (\(String(format: "%.0f", latency * 1000))ms)", systemImage: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                case .failure(let error):
+                                    Label("离线: \(error.localizedDescription)", systemImage: "xmark.circle.fill")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
                 // 基本信息
                 GroupBox(label: Label("基本信息", systemImage: "info.circle")) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -104,50 +128,11 @@ struct HostDetailView: View {
                     }
                 }
 
-                // 测试连接
-                GroupBox(label: Label("连接测试", systemImage: "link")) {
-                    HStack {
-                        Button(action: testConnection) {
-                            HStack {
-                                if isTesting {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                }
-                                Text(isTesting ? "测试中..." : "测试连接")
-                            }
-                        }
-                        .disabled(isTesting)
-
-                        Spacer()
-
-                        if let result = testResult {
-                            switch result {
-                            case .success(let latency):
-                                HStack {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                    Text("在线 (\(String(format: "%.0f", latency * 1000))ms)")
-                                        .font(.caption)
-                                }
-                            case .failure(let error):
-                                HStack {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
-                                    Text("离线")
-                                        .font(.caption)
-                                }
-                                .popoverTip(error.localizedDescription, arrowEdge: .top) {
-                                    Image(systemName: "exclamationmark.triangle")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }
-                    }
-                }
-
                 Spacer()
             }
             .padding()
+            .animation(.default, value: host.isTesting)
+            .animation(.default, value: host.lastTestResult)
         }
         .navigationTitle(host.alias)
     }
@@ -182,19 +167,6 @@ struct HostDetailView: View {
         }
         return cmd
     }
-
-    private func testConnection() {
-        isTesting = true
-        Task {
-            let connector = SSHConnector()
-            let result = await connector.testConnection(host)
-
-            await MainActor.run {
-                testResult = result
-                isTesting = false
-            }
-        }
-    }
     
     private func copyCommandToClipboard() {
         let command = generateTerminalCommand()
@@ -211,24 +183,6 @@ struct HostDetailView: View {
                 showCopyToast = false
             }
         }
-    }
-}
-
-extension View {
-    func popoverTip(_ text: String, arrowEdge: Edge = .bottom, @ViewBuilder accessory: () -> some View) -> some View {
-        self
-            .contextMenu {
-                Text(text)
-                    .font(.caption)
-                    .frame(maxWidth: 300)
-            } preview: {
-                HStack {
-                    accessory()
-                    Text(text)
-                }
-                .padding()
-                .frame(width: 300)
-            }
     }
 }
 

@@ -6,71 +6,106 @@ struct AppTopBar: View {
     @Binding var editingHost: SSHHost?
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             // Add Button
             Button {
                 addNewHost()
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 13, weight: .medium))
-                    Text("添加")
-                        .font(.system(size: 13, weight: .medium))
-                }
-                .foregroundColor(.primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.accentColor.opacity(0.1))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(Color.accentColor.opacity(0.3), lineWidth: 0.5)
-                        )
-                )
+                Label("添加主机", systemImage: "plus")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.accentColor.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 0.5)
+                            )
+                    )
             }
             .buttonStyle(PlainButtonStyle())
             .onHover { isHovering in
-                if isHovering {
-                    NSCursor.pointingHand.set()
-                } else {
-                    NSCursor.arrow.set()
-                }
+                if isHovering { NSCursor.pointingHand.set() } else { NSCursor.arrow.set() }
             }
-            .help("添加新主机")
+            .help("添加新的 SSH 主机配置")
             
             // Edit Button
             Button {
                 editSelectedHost()
             } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 13, weight: .medium))
-                    Text("编辑")
-                        .font(.system(size: 13, weight: .medium))
-                }
-                .foregroundColor(selectedHostId != nil ? .primary : .secondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(selectedHostId != nil ? Color.accentColor.opacity(0.1) : Color.clear)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(selectedHostId != nil ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 0.5)
-                        )
-                )
+                Label("编辑配置", systemImage: "pencil")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(selectedHostId != nil ? .primary : .secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(selectedHostId != nil ? Color.accentColor.opacity(0.1) : Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(selectedHostId != nil ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 0.5)
+                            )
+                    )
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(selectedHostId == nil)
             .onHover { isHovering in
-                if isHovering && selectedHostId != nil {
-                    NSCursor.pointingHand.set()
-                } else {
-                    NSCursor.arrow.set()
-                }
+                if isHovering && selectedHostId != nil { NSCursor.pointingHand.set() } else { NSCursor.arrow.set() }
             }
-            .help("编辑选中的主机")
+            .help("编辑当前选中的主机配置")
+
+            Divider()
+                .frame(height: 20)
+
+            // Test Connection Button
+            if let host = getSelectedHost() {
+                Button {
+                    testConnection(host)
+                } label: {
+                    HStack(spacing: 6) {
+                        if host.isTesting {
+                            ProgressView()
+                                .scaleEffect(0.6)
+                                .frame(width: 13, height: 13)
+                        } else {
+                            Image(systemName: "network")
+                        }
+                        Text(host.isTesting ? "测试中..." : "测试连接")
+                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.green.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.green.opacity(0.3), lineWidth: 0.5)
+                            )
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(host.isTesting)
+                .onHover { isHovering in
+                    if isHovering { NSCursor.pointingHand.set() } else { NSCursor.arrow.set() }
+                }
+                .help("测试到当前主机的网络连通性")
+            } else {
+                // Disabled Test Button
+                Label("测试连接", systemImage: "network")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
+                    )
+                    .opacity(0.5)
+            }
             
             Spacer()
         }
@@ -87,6 +122,11 @@ struct AppTopBar: View {
         )
     }
     
+    private func getSelectedHost() -> SSHHost? {
+        guard let id = selectedHostId else { return nil }
+        return configManager.hosts.first(where: { $0.id == id })
+    }
+    
     private func addNewHost() {
         let newHost = SSHHost()
         configManager.addHost(newHost)
@@ -95,9 +135,23 @@ struct AppTopBar: View {
     }
     
     private func editSelectedHost() {
-        if let selectedHostId = selectedHostId,
-           let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-            editingHost = selectedHost
+        if let host = getSelectedHost() {
+            editingHost = host
+        }
+    }
+    
+    private func testConnection(_ host: SSHHost) {
+        host.isTesting = true
+        host.lastTestResult = nil
+        
+        Task {
+            let connector = SSHConnector()
+            let result = await connector.testConnection(host)
+            
+            await MainActor.run {
+                host.lastTestResult = result
+                host.isTesting = false
+            }
         }
     }
 }
@@ -126,6 +180,6 @@ struct AppTopBar_Previews: PreviewProvider {
             editingHost: .constant(nil)
         )
         .environmentObject(SSHConfigManager())
-        .frame(width: 400, height: 60)
+        .frame(width: 500, height: 60)
     }
 }

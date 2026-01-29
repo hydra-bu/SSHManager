@@ -93,39 +93,6 @@ class SSHConnector: ObservableObject {
     }
 }
 
-// 连接测试结果
-enum ConnectionTestResult {
-    case success(latency: Double)
-    case failure(SSHConnectionError)
-}
-
-// SSH连接错误类型
-enum SSHConnectionError: Error, LocalizedError {
-    case permissionDenied
-    case connectionTimeout
-    case unknownHost
-    case keyFileNotFound(String)
-    case keyFileWrongPermissions(String)
-    case unknown(String)
-
-    var errorDescription: String? {
-        switch self {
-        case .permissionDenied:
-            return "服务器拒绝了你的连接，请检查密钥配置"
-        case .connectionTimeout:
-            return "连接超时，请检查主机地址和网络连接"
-        case .unknownHost:
-            return "无法解析主机地址"
-        case .keyFileNotFound(let path):
-            return "密钥文件不存在：\(path)"
-        case .keyFileWrongPermissions(let path):
-            return "密钥文件权限错误：\(path) (建议权限为600)"
-        case .unknown(let message):
-            return "连接失败：\(message)"
-        }
-    }
-}
-
 // SSH错误解析器
 class SSHErrorParser {
     static func parseSystemError(_ output: String) -> SSHConnectionError {

@@ -1,5 +1,46 @@
 import Foundation
 
+// 连接测试结果
+enum ConnectionTestResult: Equatable {
+    case success(latency: Double)
+    case failure(SSHConnectionError)
+    
+    static func == (lhs: ConnectionTestResult, rhs: ConnectionTestResult) -> Bool {
+        switch (lhs, rhs) {
+        case (.success(let l1), .success(let l2)): return l1 == l2
+        case (.failure(let e1), .failure(let e2)): return e1.localizedDescription == e2.localizedDescription
+        default: return false
+        }
+    }
+}
+
+// SSH连接错误类型
+enum SSHConnectionError: Error, LocalizedError {
+    case permissionDenied
+    case connectionTimeout
+    case unknownHost
+    case keyFileNotFound(String)
+    case keyFileWrongPermissions(String)
+    case unknown(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .permissionDenied:
+            return "服务器拒绝了你的连接，请检查密钥配置"
+        case .connectionTimeout:
+            return "连接超时，请检查主机地址和网络连接"
+        case .unknownHost:
+            return "无法解析主机地址"
+        case .keyFileNotFound(let path):
+            return "密钥文件不存在：\(path)"
+        case .keyFileWrongPermissions(let path):
+            return "密钥文件权限错误：\(path) (建议权限为600)"
+        case .unknown(let message):
+            return "连接失败：\(message)"
+        }
+    }
+}
+
 // SSH主机配置模型
 class SSHHost: ObservableObject, Identifiable, Codable {
     private(set) var id: UUID
@@ -9,6 +50,10 @@ class SSHHost: ObservableObject, Identifiable, Codable {
     @Published var port: Int
     @Published var identityFile: String
     @Published var options: [String: String] // 其他SSH选项
+    
+    // 运行时状态，不参与持久化
+    @Published var isTesting: Bool = false
+    @Published var lastTestResult: ConnectionTestResult? = nil
 
     init(
         id: UUID = UUID(),
@@ -43,8 +88,6 @@ class SSHHost: ObservableObject, Identifiable, Codable {
         self.identityFile = try container.decode(String.self, forKey: .identityFile)
         self.options = try container.decode([String: String].self, forKey: .options)
     }
-    
-
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)

@@ -24,86 +24,65 @@ struct ContentView: View {
     @State private var editingHost: SSHHost?
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: $configManager.selectedHostId) {
-                ForEach(configManager.hosts) { host in
-                    HostRowView(host: host)
-                        .tag(host.id)
-                        .contextMenu {
-                            Button("编辑") {
-                                editingHost = host
+        VStack(spacing: 0) {
+            // 顶层工具栏
+            AppTopBar(
+                selectedHostId: $configManager.selectedHostId,
+                editingHost: $editingHost
+            )
+            .environmentObject(configManager)
+            
+            NavigationSplitView {
+                List(selection: $configManager.selectedHostId) {
+                    ForEach(configManager.hosts) { host in
+                        HostRowView(host: host)
+                            .tag(host.id)
+                            .contextMenu {
+                                Button("编辑") {
+                                    editingHost = host
+                                }
+                                Button("删除", role: .destructive) {
+                                    configManager.removeHost(host)
+                                }
                             }
-                            Button("删除", role: .destructive) {
-                                configManager.removeHost(host)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    configManager.removeHost(host)
+                                } label: {
+                                    Label("删除", systemImage: "trash")
+                                }
+                                Button {
+                                    editingHost = host
+                                } label: {
+                                    Label("编辑", systemImage: "pencil")
+                                }
+                                .tint(.blue)
                             }
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                configManager.removeHost(host)
-                            } label: {
-                                Label("删除", systemImage: "trash")
-                            }
-                            Button {
-                                editingHost = host
-                            } label: {
-                                Label("编辑", systemImage: "pencil")
-                            }
-                            .tint(.blue)
-                        }
-                }
-            }
-            .navigationTitle("主机列表")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        addNewHost()
-                    } label: {
-                        Label("添加主机", systemImage: "plus")
                     }
-                    .help("添加新主机")
                 }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        if let selectedHostId = configManager.selectedHostId,
-                           let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                            editingHost = selectedHost
-                        }
-                    } label: {
-                        Label("编辑主机", systemImage: "pencil")
-                    }
-                    .disabled(configManager.selectedHostId == nil)
-                    .help("编辑选中的主机")
-                }
-            }
-        } detail: {
-            if let selectedHostId = configManager.selectedHostId,
-               let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                HostDetailView(host: selectedHost)
-                    .toolbar {
-                        ToolbarItem {
-                            Button {
-                                connect(to: selectedHost)
-                            } label: {
-                                Label("连接", systemImage: "terminal")
+                .navigationTitle("主机列表")
+            } detail: {
+                if let selectedHostId = configManager.selectedHostId,
+                   let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                    HostDetailView(host: selectedHost)
+                        .toolbar {
+                            ToolbarItem {
+                                Button {
+                                    connect(to: selectedHost)
+                                } label: {
+                                    Label("连接", systemImage: "terminal")
+                                }
                             }
                         }
-                    }
-            } else {
-                EmptyDetailView()
+                } else {
+                    EmptyDetailView()
+                }
             }
         }
         .sheet(item: $editingHost) { host in
             HostEditorView(host: host)
                 .environmentObject(configManager)
         }
-    }
-
-    private func addNewHost() {
-        let newHost = SSHHost()
-        configManager.addHost(newHost)
-        configManager.selectedHostId = newHost.id
-        editingHost = newHost
     }
 
     private func connect(to host: SSHHost) {
@@ -119,7 +98,7 @@ struct EmptyDetailView: View {
             Image(systemName: "server.rack")
                 .font(.system(size: 64))
                 .foregroundColor(.gray)
-            Text("选择一个主机进行编辑")
+            Text("选择一个主机进行查看")
                 .font(.headline)
                 .foregroundColor(.secondary)
         }
