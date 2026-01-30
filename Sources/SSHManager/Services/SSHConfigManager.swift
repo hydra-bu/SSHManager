@@ -28,6 +28,10 @@ class SSHConfigManager: ObservableObject {
         }
     }
     
+    var favoriteHosts: [SSHHost] {
+        hosts.filter { $0.isFavorite }
+    }
+    
     func hosts(forGroup groupId: UUID?) -> [SSHHost] {
         if let id = groupId {
             return filteredHosts.filter { $0.groupId == id }
@@ -43,7 +47,8 @@ class SSHConfigManager: ObservableObject {
             return
         }
         do {
-            let data = try Data(contentsOf: URL(fileURLWithPath: groupsPath))
+            let url = URL(fileURLWithPath: groupsPath)
+            let data = try Data(contentsOf: url)
             self.groups = try JSONDecoder().decode([HostGroup].self, from: data)
         } catch {
             ensureDefaultGroups()
@@ -54,7 +59,8 @@ class SSHConfigManager: ObservableObject {
         let groupsPath = (configPath as NSString).deletingLastPathComponent.appendingPathComponent(groupsFileName)
         do {
             let data = try JSONEncoder().encode(groups)
-            try data.write(to: URL(fileURLWithPath: groupsPath))
+            let url = URL(fileURLWithPath: groupsPath)
+            try data.write(to: url)
         } catch {
             print("Failed to save groups: \(error)")
         }
