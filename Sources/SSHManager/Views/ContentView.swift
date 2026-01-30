@@ -24,59 +24,26 @@ struct ContentView: View {
     @State private var editingHost: SSHHost?
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 顶层工具栏
-            AppTopBar(
-                selectedHostId: $configManager.selectedHostId,
-                editingHost: $editingHost
-            )
-            .environmentObject(configManager)
-            
-            NavigationSplitView {
-                List(selection: $configManager.selectedHostId) {
-                    ForEach(configManager.hosts) { host in
-                        HostRowView(host: host)
-                            .tag(host.id)
-                            .contextMenu {
-                                Button("编辑") {
-                                    editingHost = host
-                                }
-                                Button("删除", role: .destructive) {
-                                    configManager.removeHost(host)
-                                }
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    configManager.removeHost(host)
-                                } label: {
-                                    Label("删除", systemImage: "trash")
-                                }
-                                Button {
-                                    editingHost = host
-                                } label: {
-                                    Label("编辑", systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
-                    }
-                }
-                .navigationTitle("主机列表")
-            } detail: {
-                if let selectedHostId = configManager.selectedHostId,
-                   let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                    HostDetailView(host: selectedHost)
-                        .toolbar {
-                            ToolbarItem {
-                                Button {
-                                    connect(to: selectedHost)
-                                } label: {
-                                    Label("连接", systemImage: "terminal")
-                                }
+        NavigationSplitView {
+            SidebarView()
+                .environmentObject(configManager)
+                .navigationTitle("SSH Manager")
+                .frame(minWidth: 250)
+        } detail: {
+            if let selectedHostId = configManager.selectedHostId,
+               let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
+                HostDetailView(host: selectedHost)
+                    .toolbar {
+                        ToolbarItem {
+                            Button {
+                                connect(to: selectedHost)
+                            } label: {
+                                Label("连接", systemImage: "terminal")
                             }
                         }
-                } else {
-                    EmptyDetailView()
-                }
+                    }
+            } else {
+                EmptyDetailView()
             }
         }
         .sheet(item: $editingHost) { host in
