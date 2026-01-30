@@ -71,32 +71,22 @@ struct ContentView: View {
         .sheet(isPresented: $showingHostEditor) {
             if let hostId = editingHostId,
                let host = configManager.hosts.first(where: { $0.id == hostId }) {
-                NavigationStack {
-                    HostEditorView(host: host)
-                        .environmentObject(configManager)
-                        .navigationTitle(isNewHost ? "添加主机" : "编辑主机")
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("取消") {
-                                    if isNewHost && host.alias.isEmpty && host.hostname.isEmpty {
-                                        configManager.removeHost(host)
-                                    }
-                                    showingHostEditor = false
-                                    editingHostId = nil
-                                }
-                            }
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("保存") {
-                                    configManager.saveConfig()
-                                    showingHostEditor = false
-                                    editingHostId = nil
-                                }
-                                .disabled(host.alias.trimmingCharacters(in: .whitespaces).isEmpty ||
-                                         host.hostname.trimmingCharacters(in: .whitespaces).isEmpty)
-                            }
+                HostEditorView(
+                    host: host,
+                    isNewHost: isNewHost,
+                    onSave: {
+                        showingHostEditor = false
+                        editingHostId = nil
+                    },
+                    onCancel: {
+                        if isNewHost && host.alias.isEmpty && host.hostname.isEmpty {
+                            configManager.removeHost(host)
                         }
-                }
-                .frame(minWidth: 600, minHeight: 500)
+                        showingHostEditor = false
+                        editingHostId = nil
+                    }
+                )
+                .environmentObject(configManager)
             }
         }
     }

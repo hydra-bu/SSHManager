@@ -3,168 +3,94 @@ import SwiftUI
 struct HostEditorView: View {
     @ObservedObject var host: SSHHost
     @EnvironmentObject var configManager: SSHConfigManager
-    @State private var mode: HostEditorMode = .simple
+    @Environment(\.dismiss) private var dismiss
     
+    @State private var alias: String = ""
+    @State private var hostname: String = ""
+    @State private var user: String = ""
+    @State private var port: String = "22"
+    @State private var identityFile: String = ""
     @State private var enableCompression = false
     @State private var enableKeepAlive = false
     @State private var enableAgentForwarding = false
     @State private var enableX11Forwarding = false
     
-    enum HostEditorMode {
-        case simple, advanced
-    }
-    
-    init(host: SSHHost) {
-        self.host = host
-        _enableCompression = State(initialValue: host.options["Compression"] == "yes")
-        _enableKeepAlive = State(initialValue: host.options["ServerAliveInterval"] != nil)
-        _enableAgentForwarding = State(initialValue: host.options["ForwardAgent"] == "yes")
-        _enableX11Forwarding = State(initialValue: host.options["ForwardX11"] == "yes")
-    }
+    let isNewHost: Bool
+    let onSave: () -> Void
+    let onCancel: () -> Void
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Picker("模式", selection: $mode) {
-                    Text("简单").tag(HostEditorMode.simple)
-                    Text("高级").tag(HostEditorMode.advanced)
+        VStack(spacing: 0) {
+            header
+            
+            Divider()
+            
+            Form {
+                Section("基本信息") {
+                    TextField("别名", text: $alias)
+                    TextField("主机地址", text: $hostname)
+                    TextField("用户名", text: $user)
+                    TextField("端口", text: $port)
+                    HStack {
+                        TextField("私钥路径", text: $identityFile)
+                        Button("浏览") {
+                            browseKeyFile()
+                        }
+                    }
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
                 
-                if mode == .simple {
-                    simpleSection
-                } else {
-                    advancedSection
+                Section("常用选项") {
+                    Toggle("启用压缩", isOn: $enableCompression)
+                    Toggle("保持连接", isOn: $enableKeepAlive)
+                    Toggle("代理转发", isOn: $enableAgentForwarding)
+                    Toggle("X11转发", isOn: $enableX11Forwarding)
                 }
+            }
+            .formStyle(.grouped)
+            
+            Spacer()
+            
+            Divider()
+            
+            HStack {
+                Button("取消") {
+                    onCancel()
+                    dismiss()
+                }
+                
+                Spacer()
+                
+                Button("保存") {
+                    saveHost()
+                    onSave()
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(alias.isEmpty || hostname.isEmpty)
             }
             .padding()
         }
-        .onChange(of: enableCompression) { _ in syncOptions() }
-        .onChange(of: enableKeepAlive) { _ in syncOptions() }
-        .onChange(of: enableAgentForwarding) { _ in syncOptions() }
-        .onChange(of: enableX11Forwarding) { _ in syncOptions() }
-    }
-    
-    private var simpleSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("基本信息") {
-                VStack(spacing: 12) {
-                    HStack {
-                        Text("别名")
-                            .frame(width: 60, alignment: .trailing)
-                            .foregroundColor(.secondary)
-                        TextField("例如：生产服务器", text: $host.alias)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("地址")
-                            .frame(width: 60, alignment: .trailing)
-                            .foregroundColor(.secondary)
-                        TextField("主机名或IP地址", text: $host.hostname)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("用户")
-                            .frame(width: 60, alignment: .trailing)
-                            .foregroundColor(.secondary)
-                        TextField("登录用户名", text: $host.user)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("端口")
-                            .frame(width: 60, alignment: .trailing)
-                            .foregroundColor(.secondary)
-                        TextField("22", value: $host.port, formatter: NumberFormatter())
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 80)
-                        Text("默认: 22")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("私钥")
-                            .frame(width: 60, alignment: .trailing)
-                            .foregroundColor(.secondary)
-                        TextField("~/.ssh/id_rsa", text: $host.identityFile)
-                            .textFieldStyle(.roundedBorder)
-                        Button("浏览") {
-                            browseKeyFile()
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            
-            GroupBox("常用选项") {
-                VStack(alignment: .leading, spacing: 8) {
-                    Toggle("启用压缩 (Compression)", isOn: $enableCompression)
-                    Toggle("保持连接 (KeepAlive)", isOn: $enableKeepAlive)
-                    Toggle("代理转发 (AgentForwarding)", isOn: $enableAgentForwarding)
-                    Toggle("X11 转发", isOn: $enableX11Forwarding)
-                }
-                .padding(.vertical, 8)
-            }
+        .frame(width: 500, height: 450)
+        .onAppear {
+            alias = host.alias
+            hostname = host.hostname
+            user = host.user
+            port = String(host.port)
+            identityFile = host.identityFile
+            enableCompression = host.options["Compression"] == "yes"
+            enableKeepAlive = host.options["ServerAliveInterval"] != nil
+            enableAgentForwarding = host.options["ForwardAgent"] == "yes"
+            enableX11Forwarding = host.options["ForwardX11"] == "yes"
         }
     }
     
-    private var advancedSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("连接信息") {
-                VStack(spacing: 12) {
-                    HStack {
-                        Text("别名")
-                            .frame(width: 80, alignment: .trailing)
-                        TextField("必填", text: $host.alias)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("主机地址")
-                            .frame(width: 80, alignment: .trailing)
-                        TextField("主机名或IP", text: $host.hostname)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("用户名")
-                            .frame(width: 80, alignment: .trailing)
-                        TextField("可选", text: $host.user)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack {
-                        Text("端口")
-                            .frame(width: 80, alignment: .trailing)
-                        TextField("22", value: $host.port, formatter: NumberFormatter())
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 80)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            
-            GroupBox("认证") {
-                VStack(spacing: 12) {
-                    HStack {
-                        Text("私钥路径")
-                            .frame(width: 80, alignment: .trailing)
-                        TextField("~/.ssh/id_rsa", text: $host.identityFile)
-                            .textFieldStyle(.roundedBorder)
-                        Button("浏览") {
-                            browseKeyFile()
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
+    private var header: some View {
+        HStack {
+            Text(isNewHost ? "添加主机" : "编辑主机")
+                .font(.title2)
+            Spacer()
         }
+        .padding()
     }
     
     private func browseKeyFile() {
@@ -173,14 +99,19 @@ struct HostEditorView: View {
         panel.allowedContentTypes = [.data]
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
-        panel.canCreateDirectories = false
         
         if panel.runModal() == .OK {
-            host.identityFile = panel.url?.path ?? ""
+            identityFile = panel.url?.path ?? ""
         }
     }
     
-    private func syncOptions() {
+    private func saveHost() {
+        host.alias = alias
+        host.hostname = hostname
+        host.user = user
+        host.port = Int(port) ?? 22
+        host.identityFile = identityFile
+        
         if enableCompression {
             host.options["Compression"] = "yes"
         } else {
@@ -206,13 +137,7 @@ struct HostEditorView: View {
         } else {
             host.options.removeValue(forKey: "ForwardX11")
         }
-    }
-}
-
-struct HostEditorView_Previews: PreviewProvider {
-    static var previews: some View {
-        let host = SSHHost(alias: "test", hostname: "192.168.1.100", user: "admin")
-        return HostEditorView(host: host)
-            .environmentObject(SSHConfigManager())
+        
+        configManager.saveConfig()
     }
 }
