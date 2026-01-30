@@ -41,7 +41,8 @@ class SSHConfigManager: ObservableObject {
     }
     
     func loadGroups() {
-        let groupsPath = (configPath as NSString).deletingLastPathComponent.appendingPathComponent(groupsFileName)
+        let configDir = (configPath as NSString).deletingLastPathComponent
+        let groupsPath = (configDir as NSString).appendingPathComponent(groupsFileName)
         guard FileManager.default.fileExists(atPath: groupsPath) else {
             ensureDefaultGroups()
             return
@@ -56,7 +57,8 @@ class SSHConfigManager: ObservableObject {
     }
     
     func saveGroups() {
-        let groupsPath = (configPath as NSString).deletingLastPathComponent.appendingPathComponent(groupsFileName)
+        let configDir = (configPath as NSString).deletingLastPathComponent
+        let groupsPath = (configDir as NSString).appendingPathComponent(groupsFileName)
         do {
             let data = try JSONEncoder().encode(groups)
             let url = URL(fileURLWithPath: groupsPath)
