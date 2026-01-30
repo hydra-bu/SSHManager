@@ -102,6 +102,9 @@
 			isa = PBXGroup;
 			children = (
 				6C83EC0F2A8E4F7D004B4D4A /* SSHHost.swift */,
+				FAC44B90C04F49D18A133158 /* PortForward.swift */,
+				BF89A65FC45D4D2094EAB0C0 /* JumpHost.swift */,
+				F240F14E238C425982DABC54 /* HostGroup.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -122,6 +125,10 @@
 				6C83EC152A8E4F7D004B4D4A /* ContentView.swift */,
 				6C83EC172A8E4F7D004B4D4A /* HostEditorView.swift */,
 				6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */,
+				391EB7B930F442299AE0F19B /* SidebarView.swift */,
+				C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */,
+				0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */,
+				CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
