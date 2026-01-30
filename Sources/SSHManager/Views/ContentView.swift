@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var configManager: SSHConfigManager
-    @State private var editingHost: SSHHost?
+    @State private var editingHostId: UUID?
     @State private var showingHostEditor = false
     @State private var isNewHost = false
 
@@ -10,7 +10,7 @@ struct ContentView: View {
         NavigationSplitView {
             SidebarView(
                 onEditHost: { host in
-                    editingHost = host
+                    editingHostId = host.id
                     isNewHost = false
                     showingHostEditor = true
                 },
@@ -18,7 +18,7 @@ struct ContentView: View {
                     let newHost = SSHHost()
                     configManager.addHost(newHost)
                     configManager.selectedHostId = newHost.id
-                    editingHost = newHost
+                    editingHostId = newHost.id
                     isNewHost = true
                     showingHostEditor = true
                 }
@@ -32,7 +32,7 @@ struct ContentView: View {
                         let newHost = SSHHost()
                         configManager.addHost(newHost)
                         configManager.selectedHostId = newHost.id
-                        editingHost = newHost
+                        editingHostId = newHost.id
                         isNewHost = true
                         showingHostEditor = true
                     } label: {
@@ -51,7 +51,7 @@ struct ContentView: View {
                 HostDetailView(
                     host: selectedHost,
                     onEditHost: {
-                        editingHost = selectedHost
+                        editingHostId = selectedHostId
                         isNewHost = false
                         showingHostEditor = true
                     }
@@ -61,7 +61,8 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showingHostEditor) {
-            if let host = editingHost {
+            if let hostId = editingHostId,
+               let host = configManager.hosts.first(where: { $0.id == hostId }) {
                 NavigationStack {
                     HostEditorView(host: host)
                         .environmentObject(configManager)
@@ -73,12 +74,14 @@ struct ContentView: View {
                                         configManager.removeHost(host)
                                     }
                                     showingHostEditor = false
+                                    editingHostId = nil
                                 }
                             }
                             ToolbarItem(placement: .confirmationAction) {
                                 Button("保存") {
                                     configManager.saveConfig()
                                     showingHostEditor = false
+                                    editingHostId = nil
                                 }
                                 .disabled(host.alias.trimmingCharacters(in: .whitespaces).isEmpty ||
                                          host.hostname.trimmingCharacters(in: .whitespaces).isEmpty)

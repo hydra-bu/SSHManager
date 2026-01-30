@@ -9,6 +9,28 @@ struct HostDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                HStack(spacing: 12) {
+                    Button(action: onEditHost) {
+                        Label("编辑", systemImage: "pencil")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Button(action: testConnection) {
+                        if host.isTesting {
+                            ProgressView()
+                                .scaleEffect(0.6)
+                                .frame(width: 16, height: 16)
+                            Text("测试中...")
+                        } else {
+                            Label("测试连接", systemImage: "bolt.horizontal")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(host.isTesting)
+                    
+                    Spacer()
+                }
+                
                 // 状态指示器
                 if host.isTesting || host.lastTestResult != nil {
                     GroupBox(label: Label("连接状态", systemImage: "bolt.horizontal")) {
@@ -72,32 +94,6 @@ struct HostDetailView: View {
                                     .truncationMode(.middle)
                             }
                         }
-                        
-                        Divider()
-                        
-                        // 操作按钮
-                        HStack(spacing: 12) {
-                            Button(action: onEditHost) {
-                                Label("编辑", systemImage: "pencil")
-                            }
-                            .buttonStyle(.bordered)
-                            
-                            Button(action: testConnection) {
-                                if host.isTesting {
-                                    ProgressView()
-                                        .scaleEffect(0.6)
-                                        .frame(width: 16, height: 16)
-                                    Text("测试中...")
-                                } else {
-                                    Label("测试连接", systemImage: "bolt.horizontal")
-                                }
-                            }
-                            .buttonStyle(.bordered)
-                            .disabled(host.isTesting)
-                            
-                            Spacer()
-                        }
-                        .padding(.top, 4)
                     }
                 }
 
