@@ -211,8 +211,15 @@
 				6C83EC162A8E4F7D004B4D4A /* ContentView.swift in Sources */,
 				6C83EC182A8E4F7D004B4D4A /* HostEditorView.swift in Sources */,
 				6C83EC1A2A8E4F7D004B4D4A /* HostDetailView.swift in Sources */,
-				6C83EC1C2A8E4F7D004B4D4A /* SSHConfigParser.swift in Sources */,
-			);
+			6C83EC1C2A8E4F7D004B4D4A /* SSHConfigParser.swift in Sources */,
+			F5E3A9B522E54F43A19FCCEF /* PortForward.swift in Sources */,
+			5A45159D43BB4881A831D383 /* JumpHost.swift in Sources */,
+			2A2201E68CA84CB2852550E7 /* HostGroup.swift in Sources */,
+			1A5E1505A4B24248AA622BB7 /* SidebarView.swift in Sources */,
+			9965BE46E8CF468CB5144F6F /* PortForwardingSection.swift in Sources */,
+			EF7DC93746CC40A9B798790D /* JumpHostSection.swift in Sources */,
+			252624E7DB4D4694A823E66A /* PortForwardWizard.swift in Sources */,
+		);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
