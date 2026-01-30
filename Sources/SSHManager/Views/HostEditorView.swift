@@ -45,6 +45,27 @@ struct HostEditorView: View {
                     Toggle("代理转发", isOn: $enableAgentForwarding)
                     Toggle("X11转发", isOn: $enableX11Forwarding)
                 }
+                
+                if !host.portForwards.isEmpty || !host.jumpHosts.isEmpty {
+                    Section("高级配置 (只读)") {
+                        if !host.portForwards.isEmpty {
+                            HStack {
+                                Text("端口转发:")
+                                Spacer()
+                                Text("\(host.portForwards.count) 条规则")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        if !host.jumpHosts.isEmpty {
+                            HStack {
+                                Text("跳板机:")
+                                Spacer()
+                                Text("\(host.jumpHosts.count) 级跳板")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
             }
             .formStyle(.grouped)
             
