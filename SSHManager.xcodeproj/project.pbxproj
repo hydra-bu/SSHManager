@@ -18,6 +18,20 @@
 		6C83EC1A2A8E4F7D004B4D4A /* HostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC192A8E4F7D004B4D4A /* HostDetailView.swift */; };
 		6C83EC1C2A8E4F7D004B4D4A /* SSHConfigParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */; };
 		f53baf9e7a323b1536d97c3e /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 999fcfb7d13396560085f17a /* Assets.xcassets */; };
+		F5E3A9B522E54F43A19FCCEF /* PortForward.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC44B90C04F49D18A133158 /* PortForward.swift */; };
+		5A45159D43BB4881A831D383 /* JumpHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF89A65FC45D4D2094EAB0C0 /* JumpHost.swift */; };
+		2A2201E68CA84CB2852550E7 /* HostGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F240F14E238C425982DABC54 /* HostGroup.swift */; };
+		1A5E1505A4B24248AA622BB7 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 391EB7B930F442299AE0F19B /* SidebarView.swift */; };
+		9965BE46E8CF468CB5144F6F /* PortForwardingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */; };
+		EF7DC93746CC40A9B798790D /* JumpHostSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */; };
+		252624E7DB4D4694A823E66A /* PortForwardWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */; };
+		49C59813581E41B4AE537AF8 /* PortForward.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC44B90C04F49D18A133158 /* PortForward.swift */; };
+		A06762095C6242879C966574 /* JumpHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF89A65FC45D4D2094EAB0C0 /* JumpHost.swift */; };
+		E8E6B6C2FA85416D9FD0D80E /* HostGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F240F14E238C425982DABC54 /* HostGroup.swift */; };
+		F8645723AC194AC5984C5745 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 391EB7B930F442299AE0F19B /* SidebarView.swift */; };
+		0D8E81D4057A429E917F64E1 /* PortForwardingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */; };
+		C02FDBA9714F4BCD8C2F1B32 /* JumpHostSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */; };
+		ADB6C0DAC3FE438FAC95C5A3 /* PortForwardWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +48,13 @@
 		6C83EC1B2A8E4F7D004B4D4A /* SSHConfigParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHConfigParser.swift; path = SSHConfigParser.swift; sourceTree = "<group>"; };
 		6C83EC2C2A8E4F7D004B4D4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = "<group>"; };
 		999fcfb7d13396560085f17a /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Sources/SSHManager/Assets.xcassets; sourceTree = "<group>"; };
+		FAC44B90C04F49D18A133158 /* PortForward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PortForward.swift; path = PortForward.swift; sourceTree = "<group>"; };
+		BF89A65FC45D4D2094EAB0C0 /* JumpHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JumpHost.swift; path = JumpHost.swift; sourceTree = "<group>"; };
+		F240F14E238C425982DABC54 /* HostGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostGroup.swift; path = HostGroup.swift; sourceTree = "<group>"; };
+		391EB7B930F442299AE0F19B /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SidebarView.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PortForwardingSection.swift; path = PortForwardingSection.swift; sourceTree = "<group>"; };
+		0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JumpHostSection.swift; path = JumpHostSection.swift; sourceTree = "<group>"; };
+		CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PortForwardWizard.swift; path = Wizards/PortForwardWizard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
