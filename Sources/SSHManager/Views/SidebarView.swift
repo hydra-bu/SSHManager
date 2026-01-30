@@ -2,8 +2,10 @@ import SwiftUI
 
 struct SidebarView: View {
     @EnvironmentObject var configManager: SSHConfigManager
-    @State private var showingAddHost = false
+    var onEditHost: (SSHHost) -> Void
+    var onAddHost: () -> Void
     @State private var showingGroupManager = false
+    @State private var refreshID = UUID()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -39,7 +41,14 @@ struct SidebarView: View {
             }
             
             ForEach(configManager.groups.sorted(by: { $0.sortOrder < $1.sortOrder })) { group in
-                GroupSection(group: group)
+                GroupSection(
+                    group: group,
+                    onEditHost: onEditHost,
+                    refreshID: refreshID,
+                    onGroupChanged: {
+                        refreshID = UUID()
+                    }
+                )
             }
             
             let ungrouped = configManager.hosts(forGroup: nil)
@@ -48,12 +57,13 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .id(refreshID)
     }
     
     private var favoritesSection: some View {
         Section("常用") {
             ForEach(configManager.favoriteHosts) { host in
-                HostRow(host: host)
+                HostRow(host: host, onEditHost: onEditHost)
                     .tag(host.id)
             }
         }
@@ -62,7 +72,7 @@ struct SidebarView: View {
     private func ungroupedSection(hosts: [SSHHost]) -> some View {
         Section("未分组") {
             ForEach(hosts) { host in
-                HostRow(host: host)
+                HostRow(host: host, onEditHost: onEditHost)
                     .tag(host.id)
             }
         }
@@ -70,10 +80,11 @@ struct SidebarView: View {
     
     private var toolbar: some View {
         HStack {
-            Button(action: { showingAddHost = true }) {
+            Button(action: onAddHost) {
                 Image(systemName: "plus")
             }
             .buttonStyle(.borderless)
+            .help("添加新主机")
             
             Spacer()
             
@@ -81,6 +92,7 @@ struct SidebarView: View {
                 Image(systemName: "folder.badge.plus")
             }
             .buttonStyle(.borderless)
+            .help("管理分组")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -91,11 +103,14 @@ struct SidebarView: View {
 struct GroupSection: View {
     let group: HostGroup
     @EnvironmentObject var configManager: SSHConfigManager
+    var onEditHost: (SSHHost) -> Void
+    let refreshID: UUID
+    var onGroupChanged: () -> Void
     
     var body: some View {
         Section {
             ForEach(configManager.hosts(forGroup: group.id)) { host in
-                HostRow(host: host)
+                HostRow(host: host, onEditHost: onEditHost)
                     .tag(host.id)
             }
         } header: {
@@ -106,6 +121,7 @@ struct GroupSection: View {
 
 struct GroupHeader: View {
     @ObservedObject var group: HostGroup
+    @EnvironmentObject var configManager: SSHConfigManager
     
     var body: some View {
         HStack {
@@ -114,7 +130,7 @@ struct GroupHeader: View {
             Text(group.name)
                 .font(.headline)
             Spacer()
-            Text("\(groupHostCount)")
+            Text("\(hostCount)")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -126,13 +142,15 @@ struct GroupHeader: View {
         }
     }
     
-    private var groupHostCount: Int {
-        return 0 // Will be calculated from configManager
+    private var hostCount: Int {
+        configManager.hosts.filter { $0.groupId == group.id }.count
     }
 }
 
 struct HostRow: View {
     @ObservedObject var host: SSHHost
+    var onEditHost: (SSHHost) -> Void
+    @EnvironmentObject var configManager: SSHConfigManager
     
     var body: some View {
         HStack {
@@ -153,7 +171,7 @@ struct HostRow: View {
             }
         }
         .contextMenu {
-            HostContextMenu(host: host)
+            HostContextMenu(host: host, onEditHost: onEditHost)
         }
     }
     
@@ -169,7 +187,8 @@ struct HostRow: View {
 }
 
 struct HostContextMenu: View {
-    let host: SSHHost
+    @ObservedObject var host: SSHHost
+    var onEditHost: (SSHHost) -> Void
     @EnvironmentObject var configManager: SSHConfigManager
     
     var body: some View {
@@ -187,18 +206,24 @@ struct HostContextMenu: View {
         Menu("移动到分组") {
             ForEach(configManager.groups) { group in
                 Button(group.name) {
-                    host.groupId = group.id
-                    configManager.saveConfig()
+                    withAnimation {
+                        host.groupId = group.id
+                        configManager.saveConfig()
+                        configManager.objectWillChange.send()
+                    }
                 }
             }
             Button("移除分组") {
-                host.groupId = nil
-                configManager.saveConfig()
+                withAnimation {
+                    host.groupId = nil
+                    configManager.saveConfig()
+                    configManager.objectWillChange.send()
+                }
             }
         }
         Divider()
         Button("编辑") {
-            // Will trigger edit sheet
+            onEditHost(host)
         }
         Button("复制SSH命令") {
             copySSHCommand()
