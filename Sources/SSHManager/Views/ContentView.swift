@@ -36,8 +36,13 @@ struct ContentView: View {
                         isNewHost = true
                         showingHostEditor = true
                     } label: {
-                        Label("添加主机", systemImage: "plus")
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus")
+                            Text("添加主机")
+                        }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
                 }
             }
         } detail: {

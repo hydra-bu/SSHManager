@@ -1,147 +1,170 @@
 import SwiftUI
 
-struct OptionItem: Identifiable {
-    var id = UUID()
-    var key: String
-    var value: String
-}
-
 struct HostEditorView: View {
     @ObservedObject var host: SSHHost
     @EnvironmentObject var configManager: SSHConfigManager
-    @State private var options: [OptionItem] = []
+    @State private var mode: HostEditorMode = .simple
+    
+    @State private var enableCompression = false
+    @State private var enableKeepAlive = false
+    @State private var enableAgentForwarding = false
+    @State private var enableX11Forwarding = false
+    
+    enum HostEditorMode {
+        case simple, advanced
+    }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                connectionSection
-                authSection
-                advancedSection
-                portForwardingSection
-                jumpHostSection
+                Picker("模式", selection: $mode) {
+                    Text("简单").tag(HostEditorMode.simple)
+                    Text("高级").tag(HostEditorMode.advanced)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                
+                if mode == .simple {
+                    simpleSection
+                } else {
+                    advancedSection
+                }
             }
             .padding()
         }
         .onAppear {
-            options = host.options.map { OptionItem(key: $0.key, value: $0.value) }
+            loadPresetOptions()
         }
         .onDisappear {
-            syncOptionsToHost()
+            savePresetOptions()
         }
     }
     
-    private var connectionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("连接信息")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 10) {
-                HStack {
-                    Text("别名")
-                        .frame(width: 80, alignment: .trailing)
-                    TextField("例如：生产服务器 (必填)", text: $host.alias)
-                        .textFieldStyle(.roundedBorder)
-                }
-                
-                HStack {
-                    Text("地址")
-                        .frame(width: 80, alignment: .trailing)
-                    TextField("主机名或IP (必填)", text: $host.hostname)
-                        .textFieldStyle(.roundedBorder)
-                }
-                
-                HStack {
-                    Text("用户")
-                        .frame(width: 80, alignment: .trailing)
-                    TextField("用户名", text: $host.user)
-                        .textFieldStyle(.roundedBorder)
+    private var simpleSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            GroupBox("基本信息") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("别名")
+                            .frame(width: 60, alignment: .trailing)
+                            .foregroundColor(.secondary)
+                        TextField("例如：生产服务器", text: $host.alias)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     
-                    Text("端口")
-                    TextField("", value: $host.port, formatter: NumberFormatter())
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 60)
+                    HStack {
+                        Text("地址")
+                            .frame(width: 60, alignment: .trailing)
+                            .foregroundColor(.secondary)
+                        TextField("主机名或IP地址", text: $host.hostname)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    
+                    HStack {
+                        Text("用户")
+                            .frame(width: 60, alignment: .trailing)
+                            .foregroundColor(.secondary)
+                        TextField("登录用户名", text: $host.user)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    
+                    HStack {
+                        Text("端口")
+                            .frame(width: 60, alignment: .trailing)
+                            .foregroundColor(.secondary)
+                        TextField("22", value: $host.port, formatter: NumberFormatter())
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 80)
+                        Text("默认: 22")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("私钥")
+                            .frame(width: 60, alignment: .trailing)
+                            .foregroundColor(.secondary)
+                        TextField("~/.ssh/id_rsa", text: $host.identityFile)
+                            .textFieldStyle(.roundedBorder)
+                        Button("浏览") {
+                            browseKeyFile()
+                        }
+                        .buttonStyle(.borderless)
+                    }
                 }
+                .padding(.vertical, 8)
             }
-            .padding()
-            .background(Color.gray.opacity(0.05))
-            .cornerRadius(8)
-        }
-    }
-    
-    private var authSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("认证")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
             
-            HStack {
-                Text("私钥路径")
-                    .frame(width: 80, alignment: .trailing)
-                TextField("~/.ssh/id_rsa", text: $host.identityFile)
-                    .textFieldStyle(.roundedBorder)
-                Button("浏览") {
-                    browseKeyFile()
+            GroupBox("常用选项") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Toggle("启用压缩 (Compression)", isOn: $enableCompression)
+                    Toggle("保持连接 (KeepAlive)", isOn: $enableKeepAlive)
+                    Toggle("代理转发 (AgentForwarding)", isOn: $enableAgentForwarding)
+                    Toggle("X11 转发", isOn: $enableX11Forwarding)
                 }
+                .padding(.vertical, 8)
             }
-            .padding()
-            .background(Color.gray.opacity(0.05))
-            .cornerRadius(8)
         }
     }
     
     private var advancedSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("高级 SSH 选项")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Button(action: {
-                    let newKey = "option\(options.count + 1)"
-                    options.append(OptionItem(key: newKey, value: ""))
-                }) {
-                    Label("添加选项", systemImage: "plus.circle")
-                }
-                .buttonStyle(.borderless)
-            }
-            
-            if !options.isEmpty {
-                VStack(spacing: 8) {
-                    ForEach($options) { $opt in
-                        HStack {
-                            TextField("键", text: $opt.key)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 150)
-                            TextField("值", text: $opt.value)
-                                .textFieldStyle(.roundedBorder)
-                            Button(action: {
-                                if let idx = options.firstIndex(where: { $0.id == opt.id }) {
-                                    options.remove(at: idx)
-                                }
-                            }) {
-                                Image(systemName: "minus.circle")
-                                    .foregroundColor(.red)
-                            }
-                            .buttonStyle(.borderless)
-                        }
+        VStack(alignment: .leading, spacing: 16) {
+            GroupBox("连接信息") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("别名")
+                            .frame(width: 80, alignment: .trailing)
+                        TextField("必填", text: $host.alias)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    
+                    HStack {
+                        Text("主机地址")
+                            .frame(width: 80, alignment: .trailing)
+                        TextField("主机名或IP", text: $host.hostname)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    
+                    HStack {
+                        Text("用户名")
+                            .frame(width: 80, alignment: .trailing)
+                        TextField("可选", text: $host.user)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    
+                    HStack {
+                        Text("端口")
+                            .frame(width: 80, alignment: .trailing)
+                        TextField("22", value: $host.port, formatter: NumberFormatter())
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 80)
                     }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.05))
-                .cornerRadius(8)
+                .padding(.vertical, 8)
             }
+            
+            GroupBox("认证") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("私钥路径")
+                            .frame(width: 80, alignment: .trailing)
+                        TextField("~/.ssh/id_rsa", text: $host.identityFile)
+                            .textFieldStyle(.roundedBorder)
+                        Button("浏览") {
+                            browseKeyFile()
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+            
+            PortForwardingSection(host: host)
+                .environmentObject(configManager)
+            
+            JumpHostSection(host: host)
+                .environmentObject(configManager)
         }
-    }
-    
-    private var portForwardingSection: some View {
-        PortForwardingSection(host: host)
-            .environmentObject(configManager)
-    }
-    
-    private var jumpHostSection: some View {
-        JumpHostSection(host: host)
-            .environmentObject(configManager)
     }
     
     private func browseKeyFile() {
@@ -157,14 +180,39 @@ struct HostEditorView: View {
         }
     }
     
-    private func syncOptionsToHost() {
-        var newDict: [String: String] = [:]
-        for opt in options {
-            if !opt.key.trimmingCharacters(in: .whitespaces).isEmpty {
-                newDict[opt.key] = opt.value
-            }
+    private func loadPresetOptions() {
+        enableCompression = host.options["Compression"] == "yes"
+        enableKeepAlive = host.options["ServerAliveInterval"] != nil
+        enableAgentForwarding = host.options["ForwardAgent"] == "yes"
+        enableX11Forwarding = host.options["ForwardX11"] == "yes"
+    }
+    
+    private func savePresetOptions() {
+        if enableCompression {
+            host.options["Compression"] = "yes"
+        } else {
+            host.options.removeValue(forKey: "Compression")
         }
-        host.options = newDict
+        
+        if enableKeepAlive {
+            host.options["ServerAliveInterval"] = "60"
+            host.options["ServerAliveCountMax"] = "3"
+        } else {
+            host.options.removeValue(forKey: "ServerAliveInterval")
+            host.options.removeValue(forKey: "ServerAliveCountMax")
+        }
+        
+        if enableAgentForwarding {
+            host.options["ForwardAgent"] = "yes"
+        } else {
+            host.options.removeValue(forKey: "ForwardAgent")
+        }
+        
+        if enableX11Forwarding {
+            host.options["ForwardX11"] = "yes"
+        } else {
+            host.options.removeValue(forKey: "ForwardX11")
+        }
     }
 }
 
