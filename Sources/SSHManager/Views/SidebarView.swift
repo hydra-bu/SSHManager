@@ -80,12 +80,6 @@ struct SidebarView: View {
     
     private var toolbar: some View {
         HStack {
-            Button(action: onAddHost) {
-                Image(systemName: "plus")
-            }
-            .buttonStyle(.borderless)
-            .help("添加新主机")
-            
             Spacer()
             
             Button(action: { showingGroupManager = true }) {

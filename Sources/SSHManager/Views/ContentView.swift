@@ -48,25 +48,14 @@ struct ContentView: View {
         } detail: {
             if let selectedHostId = configManager.selectedHostId,
                let selectedHost = configManager.hosts.first(where: { $0.id == selectedHostId }) {
-                HostDetailView(host: selectedHost)
-                    .toolbar {
-                        ToolbarItem {
-                            Button {
-                                connect(to: selectedHost)
-                            } label: {
-                                Label("连接", systemImage: "terminal")
-                            }
-                        }
-                        ToolbarItem {
-                            Button {
-                                editingHost = selectedHost
-                                isNewHost = false
-                                showingHostEditor = true
-                            } label: {
-                                Label("编辑", systemImage: "pencil")
-                            }
-                        }
+                HostDetailView(
+                    host: selectedHost,
+                    onEditHost: {
+                        editingHost = selectedHost
+                        isNewHost = false
+                        showingHostEditor = true
                     }
+                )
             } else {
                 EmptyDetailView()
             }

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HostDetailView: View {
     @ObservedObject var host: SSHHost
+    var onEditHost: () -> Void
+    @EnvironmentObject var configManager: SSHConfigManager
     @State private var showCopyToast = false
 
     var body: some View {
@@ -35,7 +37,7 @@ struct HostDetailView: View {
 
                 // 基本信息
                 GroupBox(label: Label("基本信息", systemImage: "info.circle")) {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Text("别名:")
                                 .font(.headline)
@@ -70,6 +72,32 @@ struct HostDetailView: View {
                                     .truncationMode(.middle)
                             }
                         }
+                        
+                        Divider()
+                        
+                        // 操作按钮
+                        HStack(spacing: 12) {
+                            Button(action: onEditHost) {
+                                Label("编辑", systemImage: "pencil")
+                            }
+                            .buttonStyle(.bordered)
+                            
+                            Button(action: testConnection) {
+                                if host.isTesting {
+                                    ProgressView()
+                                        .scaleEffect(0.6)
+                                        .frame(width: 16, height: 16)
+                                    Text("测试中...")
+                                } else {
+                                    Label("测试连接", systemImage: "bolt.horizontal")
+                                }
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(host.isTesting)
+                            
+                            Spacer()
+                        }
+                        .padding(.top, 4)
                     }
                 }
 
@@ -184,18 +212,36 @@ struct HostDetailView: View {
             }
         }
     }
+    
+    private func testConnection() {
+        host.isTesting = true
+        host.lastTestResult = nil
+        
+        Task {
+            let connector = SSHConnector()
+            let result = await connector.testConnection(host)
+            
+            await MainActor.run {
+                host.lastTestResult = result
+                host.isTesting = false
+            }
+        }
+    }
 }
 
 struct HostDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            HostDetailView(host: SSHHost(
-                alias: "My Server",
-                hostname: "192.168.1.100",
-                user: "admin",
-                port: 22,
-                identityFile: "~/.ssh/id_rsa"
-            ))
+            HostDetailView(
+                host: SSHHost(
+                    alias: "My Server",
+                    hostname: "192.168.1.100",
+                    user: "admin",
+                    port: 22,
+                    identityFile: "~/.ssh/id_rsa"
+                ),
+                onEditHost: {}
+            )
         }
     }
 }
