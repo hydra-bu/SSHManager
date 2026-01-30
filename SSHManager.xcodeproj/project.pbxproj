@@ -32,6 +32,7 @@
 		0D8E81D4057A429E917F64E1 /* PortForwardingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */; };
 		C02FDBA9714F4BCD8C2F1B32 /* JumpHostSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */; };
 		ADB6C0DAC3FE438FAC95C5A3 /* PortForwardWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */; };
+		3F8A9B2C4E5D6A7B8C9D0E1F /* JumpHostWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3C4D5E6F7A8B9C0D1E2F /* JumpHostWizard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,7 @@
 		C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PortForwardingSection.swift; path = PortForwardingSection.swift; sourceTree = "<group>"; };
 		0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JumpHostSection.swift; path = JumpHostSection.swift; sourceTree = "<group>"; };
 		CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PortForwardWizard.swift; path = Wizards/PortForwardWizard.swift; sourceTree = "<group>"; };
+		2A1B3C4D5E6F7A8B9C0D1E2F /* JumpHostWizard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JumpHostWizard.swift; path = Wizards/JumpHostWizard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				C73D18A7C74E4D41A3169050 /* PortForwardingSection.swift */,
 				0E35767D138A4E7EAF66B66D /* JumpHostSection.swift */,
 				CAD47BD84E704897A31308D3 /* PortForwardWizard.swift */,
+				2A1B3C4D5E6F7A8B9C0D1E2F /* JumpHostWizard.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -226,6 +229,7 @@
 			9965BE46E8CF468CB5144F6F /* PortForwardingSection.swift in Sources */,
 			EF7DC93746CC40A9B798790D /* JumpHostSection.swift in Sources */,
 			252624E7DB4D4694A823E66A /* PortForwardWizard.swift in Sources */,
+			3F8A9B2C4E5D6A7B8C9D0E1F /* JumpHostWizard.swift in Sources */,
 		);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

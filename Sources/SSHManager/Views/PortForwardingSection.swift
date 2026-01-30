@@ -4,6 +4,7 @@ struct PortForwardingSection: View {
     @ObservedObject var host: SSHHost
     @State private var showingWizard = false
     @State private var showingAdvanced = false
+    @State private var newForward = PortForward()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -20,6 +21,21 @@ struct PortForwardingSection: View {
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(8)
+        .sheet(isPresented: $showingWizard) {
+            PortForwardWizard(
+                isPresented: $showingWizard,
+                host: host,
+                onComplete: { forward in
+                    host.portForwards.append(forward)
+                }
+            )
+        }
+        .sheet(isPresented: $showingAdvanced) {
+            PortForwardAdvancedView(
+                isPresented: $showingAdvanced,
+                host: host
+            )
+        }
     }
     
     private var header: some View {
@@ -75,6 +91,77 @@ struct PortForwardingSection: View {
     
     private func deleteForward(_ forward: PortForward) {
         host.portForwards.removeAll { $0.id == forward.id }
+    }
+}
+
+struct PortForwardAdvancedView: View {
+    @Binding var isPresented: Bool
+    @ObservedObject var host: SSHHost
+    @State private var newForward = PortForward()
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Picker("类型", selection: $newForward.type) {
+                    ForEach(PortForwardType.allCases, id: \.self) { type in
+                        Text(type.displayName).tag(type)
+                    }
+                }
+                
+                HStack {
+                    Text("本地端口")
+                    Spacer()
+                    TextField("", value: $newForward.localPort, formatter: NumberFormatter())
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 100)
+                }
+                
+                if newForward.type != .dynamic {
+                    HStack {
+                        Text("远程主机")
+                        Spacer()
+                        TextField("localhost", text: $newForward.remoteHost)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 200)
+                    }
+                    
+                    HStack {
+                        Text("远程端口")
+                        Spacer()
+                        TextField("", value: $newForward.remotePort, formatter: NumberFormatter())
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 100)
+                    }
+                }
+                
+                HStack {
+                    Text("描述")
+                    Spacer()
+                    TextField("可选", text: Binding(
+                        get: { newForward.description ?? "" },
+                        set: { newForward.description = $0.isEmpty ? nil : $0 }
+                    ))
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 200)
+                }
+            }
+            .navigationTitle("添加端口转发")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") {
+                        isPresented = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("添加") {
+                        host.portForwards.append(newForward)
+                        isPresented = false
+                    }
+                    .disabled(newForward.localPort <= 0)
+                }
+            }
+        }
+        .frame(width: 400, height: 300)
     }
 }
 

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -94,36 +94,3 @@ jobs:
       with:
         name: SSHManager-x64
         path: SSHManager-x64.dmg
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Download ARM64
-        uses: actions/download-artifact@v4
-        with:
-          name: SSHManager-ARM64
-          path: ./release-assets
-      - name: Download x64
-        uses: actions/download-artifact@v4
-        with:
-          name: SSHManager-x64
-          path: ./release-assets
-      - name: Create/Update Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release delete latest --yes || true
-          git tag -d latest || true
-          git push origin :refs/tags/latest || true
-          gh release create latest \
-            --title "Latest Build" \
-            --notes "直接下载底部的 .dmg 文件。注意：GitHub Actions 的 Artifacts 总是会自动打包成 zip，请在此 Release 页面直接下载 .dmg 文件。" \
-            --prerelease \
-            ./release-assets/SSHManager.dmg \
-            ./release-assets/SSHManager-x64.dmg

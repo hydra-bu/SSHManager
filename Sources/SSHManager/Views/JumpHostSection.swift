@@ -22,8 +22,18 @@ struct JumpHostSection: View {
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(8)
+        .sheet(isPresented: $showingWizard) {
+            JumpHostWizard(
+                isPresented: $showingWizard,
+                host: host,
+                onComplete: { jump in
+                    host.jumpHosts.append(jump)
+                }
+            )
+            .environmentObject(configManager)
+        }
     }
-    
+
     private var header: some View {
         HStack {
             Label("跳板机链", systemImage: "network")
@@ -109,12 +119,7 @@ struct JumpHostSection: View {
     private var actionButtons: some View {
         HStack(spacing: 12) {
             Button(action: { showingWizard = true }) {
-                Label("配置向导", systemImage: "wand.and.stars")
-            }
-            .buttonStyle(.bordered)
-            
-            Button(action: { showingAdvanced = true }) {
-                Label("高级", systemImage: "gearshape.2")
+                Label("添加跳板机", systemImage: "plus")
             }
             .buttonStyle(.bordered)
         }
