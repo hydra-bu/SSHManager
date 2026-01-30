@@ -60,6 +60,14 @@ struct ContentView: View {
                 EmptyDetailView()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .addNewHost)) { _ in
+            let newHost = SSHHost()
+            configManager.addHost(newHost)
+            configManager.selectedHostId = newHost.id
+            editingHostId = newHost.id
+            isNewHost = true
+            showingHostEditor = true
+        }
         .sheet(isPresented: $showingHostEditor) {
             if let hostId = editingHostId,
                let host = configManager.hosts.first(where: { $0.id == hostId }) {

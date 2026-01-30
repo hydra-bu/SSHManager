@@ -14,6 +14,14 @@ struct HostEditorView: View {
         case simple, advanced
     }
     
+    init(host: SSHHost) {
+        self.host = host
+        _enableCompression = State(initialValue: host.options["Compression"] == "yes")
+        _enableKeepAlive = State(initialValue: host.options["ServerAliveInterval"] != nil)
+        _enableAgentForwarding = State(initialValue: host.options["ForwardAgent"] == "yes")
+        _enableX11Forwarding = State(initialValue: host.options["ForwardX11"] == "yes")
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -32,12 +40,10 @@ struct HostEditorView: View {
             }
             .padding()
         }
-        .onAppear {
-            loadPresetOptions()
-        }
-        .onDisappear {
-            savePresetOptions()
-        }
+        .onChange(of: enableCompression) { _ in syncOptions() }
+        .onChange(of: enableKeepAlive) { _ in syncOptions() }
+        .onChange(of: enableAgentForwarding) { _ in syncOptions() }
+        .onChange(of: enableX11Forwarding) { _ in syncOptions() }
     }
     
     private var simpleSection: some View {
@@ -158,12 +164,6 @@ struct HostEditorView: View {
                 }
                 .padding(.vertical, 8)
             }
-            
-            PortForwardingSection(host: host)
-                .environmentObject(configManager)
-            
-            JumpHostSection(host: host)
-                .environmentObject(configManager)
         }
     }
     
@@ -180,14 +180,7 @@ struct HostEditorView: View {
         }
     }
     
-    private func loadPresetOptions() {
-        enableCompression = host.options["Compression"] == "yes"
-        enableKeepAlive = host.options["ServerAliveInterval"] != nil
-        enableAgentForwarding = host.options["ForwardAgent"] == "yes"
-        enableX11Forwarding = host.options["ForwardX11"] == "yes"
-    }
-    
-    private func savePresetOptions() {
+    private func syncOptions() {
         if enableCompression {
             host.options["Compression"] = "yes"
         } else {
