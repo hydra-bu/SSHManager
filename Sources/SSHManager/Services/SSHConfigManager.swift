@@ -3,13 +3,68 @@ import Foundation
 // SSH配置管理器
 class SSHConfigManager: ObservableObject {
     @Published var hosts: [SSHHost] = []
+    @Published var groups: [HostGroup] = []
     @Published var selectedHostId: UUID?
+    @Published var selectedGroupId: UUID?
+    @Published var searchText: String = ""
+    
+    private let groupsFileName = "groups.json"
 
     private let configPath: String
 
     init(configPath: String = "~/.ssh/config") {
         self.configPath = configPath.expandingTildeInPath
         loadConfig()
+        loadGroups()
+        ensureDefaultGroups()
+    }
+    
+    var filteredHosts: [SSHHost] {
+        if searchText.isEmpty { return hosts }
+        return hosts.filter { host in
+            host.alias.localizedCaseInsensitiveContains(searchText) ||
+            host.hostname.localizedCaseInsensitiveContains(searchText) ||
+            host.user.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
+    func hosts(forGroup groupId: UUID?) -> [SSHHost] {
+        if let id = groupId {
+            return filteredHosts.filter { $0.groupId == id }
+        } else {
+            return filteredHosts.filter { $0.groupId == nil }
+        }
+    }
+    
+    func loadGroups() {
+        let groupsPath = (configPath as NSString).deletingLastPathComponent.appendingPathComponent(groupsFileName)
+        guard FileManager.default.fileExists(atPath: groupsPath) else {
+            ensureDefaultGroups()
+            return
+        }
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: groupsPath))
+            self.groups = try JSONDecoder().decode([HostGroup].self, from: data)
+        } catch {
+            ensureDefaultGroups()
+        }
+    }
+    
+    func saveGroups() {
+        let groupsPath = (configPath as NSString).deletingLastPathComponent.appendingPathComponent(groupsFileName)
+        do {
+            let data = try JSONEncoder().encode(groups)
+            try data.write(to: URL(fileURLWithPath: groupsPath))
+        } catch {
+            print("Failed to save groups: \(error)")
+        }
+    }
+    
+    private func ensureDefaultGroups() {
+        if groups.isEmpty {
+            groups = HostGroup.defaultGroups
+            saveGroups()
+        }
     }
 
     // 加载SSH配置文件

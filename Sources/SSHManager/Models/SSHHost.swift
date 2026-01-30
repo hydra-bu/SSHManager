@@ -49,9 +49,13 @@ class SSHHost: ObservableObject, Identifiable, Codable {
     @Published var user: String
     @Published var port: Int
     @Published var identityFile: String
-    @Published var options: [String: String] // 其他SSH选项
+    @Published var options: [String: String]
+    @Published var groupId: UUID?
+    @Published var tags: [String]
+    @Published var portForwards: [PortForward]
+    @Published var jumpHosts: [JumpHost]
+    @Published var isFavorite: Bool
     
-    // 运行时状态，不参与持久化
     @Published var isTesting: Bool = false
     @Published var lastTestResult: ConnectionTestResult? = nil
 
@@ -62,7 +66,12 @@ class SSHHost: ObservableObject, Identifiable, Codable {
         user: String = "",
         port: Int = 22,
         identityFile: String = "",
-        options: [String: String] = [:]
+        options: [String: String] = [:],
+        groupId: UUID? = nil,
+        tags: [String] = [],
+        portForwards: [PortForward] = [],
+        jumpHosts: [JumpHost] = [],
+        isFavorite: Bool = false
     ) {
         self.id = id
         self.alias = alias
@@ -71,11 +80,17 @@ class SSHHost: ObservableObject, Identifiable, Codable {
         self.port = port
         self.identityFile = identityFile
         self.options = options
+        self.groupId = groupId
+        self.tags = tags
+        self.portForwards = portForwards
+        self.jumpHosts = jumpHosts
+        self.isFavorite = isFavorite
     }
     
     // MARK: - Codable Conformance
     enum CodingKeys: String, CodingKey {
         case id, alias, hostname, user, port, identityFile, options
+        case groupId, tags, portForwards, jumpHosts, isFavorite
     }
     
     required init(from decoder: Decoder) throws {
@@ -87,6 +102,11 @@ class SSHHost: ObservableObject, Identifiable, Codable {
         self.port = try container.decode(Int.self, forKey: .port)
         self.identityFile = try container.decode(String.self, forKey: .identityFile)
         self.options = try container.decode([String: String].self, forKey: .options)
+        self.groupId = try container.decodeIfPresent(UUID.self, forKey: .groupId)
+        self.tags = try container.decode([String].self, forKey: .tags)
+        self.portForwards = try container.decode([PortForward].self, forKey: .portForwards)
+        self.jumpHosts = try container.decode([JumpHost].self, forKey: .jumpHosts)
+        self.isFavorite = try container.decode(Bool.self, forKey: .isFavorite)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -98,6 +118,11 @@ class SSHHost: ObservableObject, Identifiable, Codable {
         try container.encode(port, forKey: .port)
         try container.encode(identityFile, forKey: .identityFile)
         try container.encode(options, forKey: .options)
+        try container.encodeIfPresent(groupId, forKey: .groupId)
+        try container.encode(tags, forKey: .tags)
+        try container.encode(portForwards, forKey: .portForwards)
+        try container.encode(jumpHosts, forKey: .jumpHosts)
+        try container.encode(isFavorite, forKey: .isFavorite)
     }
     
     // MARK: - Hashable Conformance
