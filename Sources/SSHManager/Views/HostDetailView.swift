@@ -44,10 +44,10 @@ struct HostDetailView: View {
                                 switch result {
                                 case .success(let latency):
                                     Label("在线 (\(String(format: "%.0f", latency * 1000))ms)", systemImage: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
+                                        .foregroundColor(Theme.success)
                                 case .failure(let error):
                                     Label("离线: \(error.localizedDescription)", systemImage: "xmark.circle.fill")
-                                        .foregroundColor(.red)
+                                        .foregroundColor(Theme.danger)
                                 }
                             }
                             Spacer()
@@ -102,13 +102,13 @@ struct HostDetailView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("~/.ssh/config 中的内容：")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Theme.textSecondary)
 
                         ScrollView(.horizontal) {
                             Text(generateSSHConfig())
                                 .font(.system(.body, design: .monospaced))
                                 .padding()
-                                .background(Color.black.opacity(0.05))
+                                .background(Theme.backgroundSecondary)
                                 .cornerRadius(4)
                                 .textSelection(.enabled)
                         }
@@ -121,13 +121,13 @@ struct HostDetailView: View {
                         HStack {
                             Text("在终端中执行的命令：")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(Theme.textSecondary)
                             Spacer()
                             
                             if showCopyToast {
                                 Text("已复制到剪贴板")
                                     .font(.caption)
-                                    .foregroundColor(.green)
+                                    .foregroundColor(Theme.success)
                                     .transition(.opacity)
                             }
                             
@@ -141,14 +141,14 @@ struct HostDetailView: View {
                             Text(generateTerminalCommand())
                                 .font(.system(.body, design: .monospaced))
                                 .padding()
-                                .background(Color.black.opacity(0.05))
+                                .background(Theme.backgroundSecondary)
                                 .cornerRadius(4)
                                 .textSelection(.enabled)
                         }
                         
                         Text("复制命令后粘贴到终端即可连接")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Theme.textSecondary)
                     }
                 }
 

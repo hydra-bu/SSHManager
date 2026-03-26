@@ -19,13 +19,13 @@ struct SidebarView: View {
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundColor(Theme.textSecondary)
             TextField("搜索主机...", text: $configManager.searchText)
                 .textFieldStyle(.plain)
             if !configManager.searchText.isEmpty {
                 Button(action: { configManager.searchText = "" }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Theme.textSecondary)
                 }
                 .buttonStyle(.plain)
             }
@@ -126,7 +126,7 @@ struct GroupHeader: View {
             Spacer()
             Text("\(hostCount)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Theme.textSecondary)
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -149,18 +149,18 @@ struct HostRow: View {
     var body: some View {
         HStack {
             Image(systemName: hostIcon)
-                .foregroundColor(.blue)
+                .foregroundColor(Theme.info)
             VStack(alignment: .leading) {
                 Text(host.alias.isEmpty ? "未命名" : host.alias)
                     .font(.headline)
                 Text(host.getUserAtHost())
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Theme.textSecondary)
             }
             Spacer()
             if host.isFavorite {
                 Image(systemName: "star.fill")
-                    .foregroundColor(.yellow)
+                    .foregroundColor(Theme.warning)
                     .font(.caption)
             }
         }

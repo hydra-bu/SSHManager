@@ -91,7 +91,7 @@ struct ContentView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 48))
-                        .foregroundColor(.orange)
+                        .foregroundColor(Theme.warning)
                     Text("找不到主机配置")
                         .font(.headline)
                     Button("关闭") {
@@ -117,10 +117,10 @@ struct EmptyDetailView: View {
         VStack {
             Image(systemName: "server.rack")
                 .font(.system(size: 64))
-                .foregroundColor(.gray)
+                .foregroundColor(Theme.textTertiary)
             Text("选择一个主机进行查看")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Theme.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

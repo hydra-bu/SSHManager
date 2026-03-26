@@ -13,15 +13,15 @@ struct AppTopBar: View {
             } label: {
                 Label("添加主机", systemImage: "plus")
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Theme.textPrimary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.accentColor.opacity(0.1))
+                            .fill(Theme.primary.opacity(0.1))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 6)
-                                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 0.5)
+                                    .stroke(Theme.primary.opacity(0.3), lineWidth: 0.5)
                             )
                     )
             }
@@ -37,15 +37,15 @@ struct AppTopBar: View {
             } label: {
                 Label("编辑配置", systemImage: "pencil")
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(selectedHostId != nil ? .primary : .secondary)
+                    .foregroundColor(selectedHostId != nil ? Theme.textPrimary : Theme.textSecondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(selectedHostId != nil ? Color.accentColor.opacity(0.1) : Color.clear)
+                            .fill(selectedHostId != nil ? Theme.primary.opacity(0.1) : Color.clear)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 6)
-                                    .stroke(selectedHostId != nil ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 0.5)
+                                    .stroke(selectedHostId != nil ? Theme.primary.opacity(0.3) : Theme.divider, lineWidth: 0.5)
                             )
                     )
             }
@@ -75,15 +75,15 @@ struct AppTopBar: View {
                         Text(host.isTesting ? "测试中..." : "测试连接")
                     }
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Theme.textPrimary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.green.opacity(0.1))
+                            .fill(Theme.success.opacity(0.1))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 6)
-                                    .stroke(Color.green.opacity(0.3), lineWidth: 0.5)
+                                    .stroke(Theme.success.opacity(0.3), lineWidth: 0.5)
                             )
                     )
                 }
@@ -97,12 +97,12 @@ struct AppTopBar: View {
                 // Disabled Test Button
                 Label("测试连接", systemImage: "network")
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Theme.textSecondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(
                         RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
+                            .stroke(Theme.divider, lineWidth: 0.5)
                     )
                     .opacity(0.5)
             }
@@ -117,7 +117,7 @@ struct AppTopBar: View {
         .overlay(
             Rectangle()
                 .frame(height: 0.5)
-                .foregroundColor(.gray.opacity(0.3)),
+                .foregroundColor(Theme.divider),
             alignment: .bottom
         )
     }
