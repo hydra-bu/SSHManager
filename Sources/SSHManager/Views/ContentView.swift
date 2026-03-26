@@ -87,6 +87,21 @@ struct ContentView: View {
                     }
                 )
                 .environmentObject(configManager)
+            } else {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 48))
+                        .foregroundColor(.orange)
+                    Text("找不到主机配置")
+                        .font(.headline)
+                    Button("关闭") {
+                        showingHostEditor = false
+                        editingHostId = nil
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(width: 300, height: 200)
+                .padding()
             }
         }
     }

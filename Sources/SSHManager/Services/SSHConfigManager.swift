@@ -95,31 +95,36 @@ class SSHConfigManager: ObservableObject {
         }
     }
 
-    // 保存SSH配置文件
+    // 保存SSH配置文件 (异步)
     func saveConfig() {
-        do {
-            // 1. 备份原文件
-            let backupPath = configPath + ".backup"
-            if FileManager.default.fileExists(atPath: configPath) {
-                try? FileManager.default.removeItem(atPath: backupPath)
-                try? FileManager.default.copyItem(atPath: configPath, toPath: backupPath)
+        let currentHosts = self.hosts
+        let path = self.configPath
+        
+        Task.detached(priority: .utility) {
+            do {
+                // 1. 备份原文件
+                let backupPath = path + ".backup"
+                if FileManager.default.fileExists(atPath: path) {
+                    try? FileManager.default.removeItem(atPath: backupPath)
+                    try? FileManager.default.copyItem(atPath: path, toPath: backupPath)
+                }
+                
+                // 2. 生成配置内容
+                let content = self.formatSSHConfig(currentHosts)
+                
+                // 3. 写入文件
+                try content.write(toFile: path, atomically: true, encoding: .utf8)
+                
+                // 4. 设置正确的文件权限 (600)
+                try FileManager.default.setAttributes(
+                    [.posixPermissions: 0o600],
+                    ofItemAtPath: path
+                )
+                
+                print("✅ 配置已保存到: \(path)")
+            } catch {
+                print("❌ 保存SSH配置失败: \(error)")
             }
-            
-            // 2. 生成配置内容
-            let content = formatSSHConfig(hosts)
-            
-            // 3. 写入文件
-            try content.write(toFile: configPath, atomically: true, encoding: .utf8)
-            
-            // 4. 设置正确的文件权限 (600)
-            try FileManager.default.setAttributes(
-                [.posixPermissions: 0o600],
-                ofItemAtPath: configPath
-            )
-            
-            print("✅ 配置已保存到: \(configPath)")
-        } catch {
-            print("❌ 保存SSH配置失败: \(error)")
         }
     }
 

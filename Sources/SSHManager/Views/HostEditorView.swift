@@ -3,7 +3,6 @@ import SwiftUI
 struct HostEditorView: View {
     @ObservedObject var host: SSHHost
     @EnvironmentObject var configManager: SSHConfigManager
-    @Environment(\.dismiss) private var dismiss
     
     @State private var alias: String = ""
     @State private var hostname: String = ""
@@ -76,7 +75,6 @@ struct HostEditorView: View {
             HStack {
                 Button("取消") {
                     onCancel()
-                    dismiss()
                 }
                 
                 Spacer()
@@ -84,7 +82,6 @@ struct HostEditorView: View {
                 Button("保存") {
                     saveHost()
                     onSave()
-                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(alias.isEmpty || hostname.isEmpty)
