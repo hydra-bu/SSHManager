@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct SSHManagerApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var configManager = SSHConfigManager()
     @State private var showingPortForwardWizard = false
     @State private var showingJumpHostWizard = false
@@ -96,6 +97,17 @@ struct SSHManagerApp: App {
                 host.isTesting = false
             }
         }
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            for window in sender.windows {
+                window.makeKeyAndOrderFront(nil)
+            }
+        }
+        return true
     }
 }
 
