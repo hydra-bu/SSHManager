@@ -1,4 +1,33 @@
 import SwiftUI
+import Sparkle
+
+// MARK: - Check for Updates ViewModel
+final class CheckForUpdatesViewModel: ObservableObject {
+    @Published var canCheckForUpdates = false
+
+    init(updater: SPUUpdater) {
+        updater.publisher(for: \.canCheckForUpdates)
+            .assign(to: &$canCheckForUpdates)
+    }
+}
+
+// MARK: - Check for Updates View
+struct CheckForUpdatesView: View {
+    @ObservedObject private var checkForUpdatesViewModel: CheckForUpdatesViewModel
+    private let updater: SPUUpdater
+    
+    init(updater: SPUUpdater) {
+        self.updater = updater
+        self.checkForUpdatesViewModel = CheckForUpdatesViewModel(updater: updater)
+    }
+    
+    var body: some View {
+        Button("检查更新…") {
+            updater.checkForUpdates()
+        }
+        .disabled(!checkForUpdatesViewModel.canCheckForUpdates)
+    }
+}
 
 @main
 struct SSHManagerApp: App {
@@ -6,6 +35,16 @@ struct SSHManagerApp: App {
     @StateObject private var configManager = SSHConfigManager()
     @State private var showingPortForwardWizard = false
     @State private var showingJumpHostWizard = false
+    
+    private let updaterController: SPUStandardUpdaterController
+    
+    init() {
+        updaterController = SPUStandardUpdaterController(
+            startingUpdater: true,
+            updaterDelegate: nil,
+            userDriverDelegate: nil
+        )
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -43,6 +82,10 @@ struct SSHManagerApp: App {
                 Button("关于 SSH Manager") {
                     // 关于对话框
                 }
+            }
+            
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesView(updater: updaterController.updater)
             }
             
             CommandMenu("主机") {

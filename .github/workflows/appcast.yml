@@ -1,0 +1,57 @@
+name: Deploy Appcast
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy-appcast:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Sparkle Tools
+        run: |
+          curl -L -o sparkle.tar.xz "https://github.com/sparkle-project/Sparkle/releases/download/2.9.0/Sparkle-2.9.0.tar.xz"
+          tar -xf sparkle.tar.xz
+          chmod +x Sparkle-2.9.0/bin/*
+
+      - name: Download Release Assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p updates
+          gh release download ${{ github.event.release.tag_name }} \
+            --pattern "*.zip" \
+            --dir updates \
+            --repo ${{ github.repository }}
+
+      - name: Generate Appcast
+        run: |
+          ./Sparkle-2.9.0/bin/generate_appcast updates/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./updates
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

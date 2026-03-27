@@ -60,10 +60,14 @@ jobs:
       run: |
         hdiutil create -volname "SSHManager" -srcfolder "SSHManager.app" -ov -format UDZO "SSHManager.dmg"
 
+    - name: Create ZIP for Sparkle
+      run: |
+        ditto -c -k --sequesterRsrc --keepParent "SSHManager.app" "SSHManager.zip"
+
     - name: Create Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "SSHManager.dmg,SSHManager.app"
+        artifacts: "SSHManager.dmg,SSHManager.zip"
         token: ${{ secrets.GITHUB_TOKEN }}
         name: "Release ${{ github.ref_name }}"
         tag: ${{ github.ref_name }}

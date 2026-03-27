@@ -10,12 +10,12 @@ let package = Package(
         .executable(name: "SSHManager", targets: ["SSHManager"])
     ],
     dependencies: [
-        // 依赖项（如果需要的话）
+        .package(url: "https://github.com/sparkle-project/Sparkle.git", from: "2.9.0")
     ],
     targets: [
         .executableTarget(
             name: "SSHManager",
-            dependencies: [],
+            dependencies: ["Sparkle"],
             path: "Sources/SSHManager"
         )
     ]
