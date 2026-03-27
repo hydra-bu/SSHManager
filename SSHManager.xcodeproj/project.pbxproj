@@ -36,6 +36,9 @@
 		3F8A9B2C4E5D6A7B8C9D0E1F /* JumpHostWizard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3C4D5E6F7A8B9C0D1E2F /* JumpHostWizard.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		6C83ECFF2A8E4F7D004B4D4A /* AppTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppTopBar.swift; path = AppTopBar.swift; sourceTree = "<group>"; };
 		6C83ED012A8E4F7D004B4D4A /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AppIcon.icns; path = Sources/SSHManager/Assets.xcassets/AppIcon.icns; sourceTree = "<group>"; };
@@ -150,53 +153,59 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6C83EC062A8E4F7D004B4D4A /* SSHManager */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6C83EC292A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */;
-			buildPhases = (
-				6C83EC032A8E4F7D004B4D4A /* Sources */,
-				6C83EC042A8E4F7D004B4D4A /* Frameworks */,
-				6C83EC2D2A8E4F7D004B4D4A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SSHManager;
-			productName = SSHManager;
-			productReference = 6C83EC052A8E4F7D004B4D4A /* SSHManager.app */;
-			productType = "com.apple.product-type.application";
-		};
+	6C83EC062A8E4F7D004B4D4A /* SSHManager */ = {
+		isa = PBXNativeTarget;
+		buildConfigurationList = 6C83EC292A8E4F7D004B4D4A /* Build configuration list for PBXNativeTarget "SSHManager" */;
+		buildPhases = (
+			6C83EC032A8E4F7D004B4D4A /* Sources */,
+			6C83EC042A8E4F7D004B4D4A /* Frameworks */,
+			6C83EC2D2A8E4F7D004B4D4A /* Resources */,
+		);
+		buildRules = (
+		);
+		dependencies = (
+		);
+		name = SSHManager;
+		packageProductDependencies = (
+			C1D2E3F4A5B6C7D8E9F0A1B2 /* Sparkle */,
+		);
+		productName = SSHManager;
+		productReference = 6C83EC052A8E4F7D004B4D4A /* SSHManager.app */;
+		productType = "com.apple.product-type.application";
+	};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		6C83EC012A8E4F7D004B4D4A /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1340;
-				TargetAttributes = {
-					6C83EC062A8E4F7D004B4D4A = {
-						CreatedOnToolsVersion = 13.0;
-					};
+	6C83EC012A8E4F7D004B4D4A /* Project object */ = {
+		isa = PBXProject;
+		attributes = {
+			BuildIndependentTargetsInParallel = YES;
+			LastUpgradeCheck = 1340;
+			TargetAttributes = {
+				6C83EC062A8E4F7D004B4D4A = {
+					CreatedOnToolsVersion = 13.0;
 				};
 			};
-			buildConfigurationList = 6C83EC0B2A8E4F7D004B4D4A /* Build configuration list for PBXProject "SSHManager" */;
-			compatibilityVersion = "Xcode 13.0";
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
-			);
-			mainGroup = 6C83EC022A8E4F7D004B4D4A /* SSHManager */;
-			productRefGroup = 6C83EC072A8E4F7D004B4D4A /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (
-				6C83EC062A8E4F7D004B4D4A /* SSHManager */,
-			);
 		};
+		buildConfigurationList = 6C83EC0B2A8E4F7D004B4D4A /* Build configuration list for PBXProject "SSHManager" */;
+		compatibilityVersion = "Xcode 13.0";
+		developmentRegion = en;
+		hasScannedForEncodings = 0;
+		knownRegions = (
+			en,
+			Base,
+		);
+		mainGroup = 6C83EC022A8E4F7D004B4D4A /* SSHManager */;
+		packageReferences = (
+			B0C1D2E3F4A5B6C7D8E9F0A1 /* XCRemoteSwiftPackageReference "Sparkle" */,
+		);
+		productRefGroup = 6C83EC072A8E4F7D004B4D4A /* Products */;
+		projectDirPath = "";
+		projectRoot = "";
+		targets = (
+			6C83EC062A8E4F7D004B4D4A /* SSHManager */,
+		);
+	};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -399,6 +408,25 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+	B0C1D2E3F4A5B6C7D8E9F0A1 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+		isa = XCRemoteSwiftPackageReference;
+		repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+		requirement = {
+			kind = upToNextMajorVersion;
+			minimumVersion = 2.9.0;
+		};
 	};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+	C1D2E3F4A5B6C7D8E9F0A1B2 /* Sparkle */ = {
+		isa = XCSwiftPackageProductDependency;
+		package = B0C1D2E3F4A5B6C7D8E9F0A1 /* XCRemoteSwiftPackageReference "Sparkle" */;
+		productName = Sparkle;
+	};
+/* End XCSwiftPackageProductDependency section */
+
+};
 	rootObject = 6C83EC012A8E4F7D004B4D4A /* Project object */;
 }
