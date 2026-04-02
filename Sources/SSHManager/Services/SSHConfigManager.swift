@@ -115,6 +115,78 @@ class SSHConfigManager: ObservableObject {
         hosts.removeAll { $0.id == host.id }
         saveConfig()
     }
+
+    // 从文件导入配置
+    func importFrom(path: String, strategy: ImportStrategy = .skipDuplicates) -> ImportResult {
+        let importedHosts = SSHConfigParser.load(from: path)
+
+        var added = 0
+        var skipped = 0
+        var updated = 0
+
+        for imported in importedHosts {
+            if let existingIndex = hosts.firstIndex(where: { $0.alias == imported.alias }) {
+                switch strategy {
+                case .skipDuplicates:
+                    skipped += 1
+                case .overwriteDuplicates:
+                    imported.groupId = hosts[existingIndex].groupId
+                    imported.isFavorite = hosts[existingIndex].isFavorite
+                    hosts[existingIndex] = imported
+                    updated += 1
+                case .renameDuplicates:
+                    imported.alias = "\(imported.alias)_imported"
+                    hosts.append(imported)
+                    added += 1
+                }
+            } else {
+                hosts.append(imported)
+                added += 1
+            }
+        }
+
+        saveConfig()
+
+        return ImportResult(
+            total: importedHosts.count,
+            added: added,
+            skipped: skipped,
+            updated: updated
+        )
+    }
+
+    // 从系统默认路径导入
+    func importFromDefaultLocation() -> ImportResult? {
+        let defaultPath = "~/.ssh/config"
+        let expanded = (defaultPath as NSString).expandingTildeInPath
+
+        guard FileManager.default.fileExists(atPath: expanded) else {
+            return nil
+        }
+
+        return importFrom(path: expanded)
+    }
+}
+
+enum ImportStrategy {
+    case skipDuplicates
+    case overwriteDuplicates
+    case renameDuplicates
+}
+
+struct ImportResult {
+    let total: Int
+    let added: Int
+    let skipped: Int
+    let updated: Int
+
+    var description: String {
+        var parts: [String] = []
+        if added > 0 { parts.append("新增 \(added) 个") }
+        if updated > 0 { parts.append("更新 \(updated) 个") }
+        if skipped > 0 { parts.append("跳过 \(skipped) 个重复") }
+        return parts.isEmpty ? "无变更" : parts.joined(separator: "，")
+    }
 }
 
 // 扩展String以支持波浪号路径展开
