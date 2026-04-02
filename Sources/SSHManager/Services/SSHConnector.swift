@@ -1,18 +1,12 @@
 import Foundation
 
-// SSH连接器
 class SSHConnector: ObservableObject {
-    // 连接到主机（在新的终端窗口中）
-    func connect(to host: SSHHost) {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
-        process.arguments = [host.alias]  // 使用配置别名，自动读取~/.ssh/config
 
-        // 设置为在终端中运行
+    func connect(to host: SSHHost) {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
         task.arguments = [
-            "-e", "tell app \"Terminal\" to do script \"ssh \(host.alias)\""
+            "-e", "tell app \"Terminal\" to do script \"\(generateSSHCommand(for: host))\""
         ]
 
         do {
@@ -20,35 +14,14 @@ class SSHConnector: ObservableObject {
             task.waitUntilExit()
         } catch {
             print("启动终端失败: \(error)")
-            // 如果Terminal失败，尝试使用iTerm2
             connectWithiTerm2(host: host)
         }
     }
 
-    // 使用iTerm2连接（如果安装了的话）
-    private func connectWithiTerm2(host: SSHHost) {
-        let sshCommand = generateSSHCommand(for: host)
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
-        task.arguments = [
-            "-e", "tell app \"iTerm\" to create window with default profile command \"\(sshCommand)\""
-        ]
-
-        do {
-            try task.run()
-            task.waitUntilExit()
-        } catch {
-            print("启动iTerm2失败: \(error)")
-            // 最后尝试直接执行ssh命令
-            connectDirectly(host: host)
-        }
-    }
-
-    // 使用iTerm2在新标签页连接
     func connectWithiTerm2NewTab(host: SSHHost) {
         let sshCommand = generateSSHCommand(for: host)
         let escapedCommand = sshCommand.replacingOccurrences(of: "\"", with: "\\\"")
-        
+
         let appleScript = """
         tell application "iTerm"
             activate
@@ -63,7 +36,7 @@ class SSHConnector: ObservableObject {
             end tell
         end tell
         """
-        
+
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
         task.arguments = ["-e", appleScript]
@@ -72,52 +45,14 @@ class SSHConnector: ObservableObject {
             try task.run()
         } catch {
             print("启动iTerm2新标签页失败: \(error)")
-            // 如果失败，尝试创建新窗口
             connectWithiTerm2(host: host)
         }
     }
 
-    // 生成SSH命令
-    private func generateSSHCommand(for host: SSHHost) -> String {
-        var cmd = "ssh"
-        if host.port != 22 {
-            cmd += " -p \(host.port)"
-        }
-        if !host.identityFile.isEmpty {
-            cmd += " -i \(host.identityFile)"
-        }
-        cmd += " \(host.getUserAtHost())"
-        return cmd
-    }
-
-    // 直接连接（用于测试）
-    private func connectDirectly(host: SSHHost) {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
-        process.arguments = [host.alias]
-
-        do {
-            try process.run()
-            process.waitUntilExit()
-        } catch {
-            print("SSH连接失败: \(error)")
-        }
-    }
-
-    // 测试连接（异步）
     func testConnection(_ host: SSHHost) async -> ConnectionTestResult {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
-        process.arguments = [
-            "-o", "ConnectTimeout=10",
-            "-o", "BatchMode=yes",
-            "-o", "StrictHostKeyChecking=accept-new",
-            "-o", "PreferredAuthentications=publickey",
-            "-o", "ServerAliveInterval=5",
-            "-o", "ServerAliveCountMax=1",
-            "-p", "\(host.port)",
-            host.getUserAtHost()
-        ]
+        process.arguments = buildTestArguments(for: host)
 
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -141,9 +76,82 @@ class SSHConnector: ObservableObject {
             return .failure(.unknown(error.localizedDescription))
         }
     }
+
+    private func connectWithiTerm2(host: SSHHost) {
+        let sshCommand = generateSSHCommand(for: host)
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        task.arguments = [
+            "-e", "tell app \"iTerm\" to create window with default profile command \"\(sshCommand)\""
+        ]
+
+        do {
+            try task.run()
+            task.waitUntilExit()
+        } catch {
+            print("启动iTerm2失败: \(error)")
+            connectDirectly(host: host)
+        }
+    }
+
+    private func connectDirectly(host: SSHHost) {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
+        process.arguments = [host.alias]
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
+            print("SSH连接失败: \(error)")
+        }
+    }
+
+    private func generateSSHCommand(for host: SSHHost) -> String {
+        var components = ["ssh"]
+
+        if host.port != 22 {
+            components.append(contentsOf: ["-p", "\(host.port)"])
+        }
+
+        if !host.identityFile.isEmpty {
+            components.append(contentsOf: ["-i", host.identityFile])
+        }
+
+        if !host.jumpHosts.isEmpty {
+            let jumpString = host.jumpHosts.map { $0.toProxyJumpString() }.joined(separator: ",")
+            components.append(contentsOf: ["-J", jumpString])
+        }
+
+        for forward in host.portForwards where forward.isActive {
+            components.append(forward.toSSHArgument())
+        }
+
+        components.append(host.getUserAtHost())
+        return components.joined(separator: " ")
+    }
+
+    private func buildTestArguments(for host: SSHHost) -> [String] {
+        var args = [
+            "-o", "ConnectTimeout=10",
+            "-o", "BatchMode=yes",
+            "-o", "StrictHostKeyChecking=accept-new",
+            "-o", "PreferredAuthentications=publickey",
+            "-o", "ServerAliveInterval=5",
+            "-o", "ServerAliveCountMax=1",
+            "-p", "\(host.port)"
+        ]
+
+        if !host.jumpHosts.isEmpty {
+            let jumpString = host.jumpHosts.map { $0.toProxyJumpString() }.joined(separator: ",")
+            args.append(contentsOf: ["-J", jumpString])
+        }
+
+        args.append(host.getUserAtHost())
+        return args
+    }
 }
 
-// SSH错误解析器
 class SSHErrorParser {
     static func parseSystemError(_ output: String) -> SSHConnectionError {
         if output.contains("Connection refused") || output.contains("kex_exchange_identification") {
@@ -159,14 +167,6 @@ class SSHErrorParser {
         } else if output.contains("Network is unreachable") {
             return .networkUnreachable
         } else if output.contains("No such file") || output.contains("not found") {
-            // 尝试找出是哪个文件不存在
-            let lines = output.components(separatedBy: "\n")
-            for line in lines {
-                if line.contains("No such file") || line.contains("not found") {
-                    // 简单提取路径（实际情况可能需要更复杂的解析）
-                    return .keyFileNotFound("unknown_path")
-                }
-            }
             return .keyFileNotFound("unknown_path")
         } else if output.contains("Bad permissions") || output.contains("Permission denied (publickey)") {
             return .keyFileWrongPermissions("unknown_path")
