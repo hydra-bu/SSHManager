@@ -1,20 +1,14 @@
 import Foundation
 
 class SSHConnector: ObservableObject {
+    private let preferences = UserPreferences.shared
 
     func connect(to host: SSHHost) {
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
-        task.arguments = [
-            "-e", "tell app \"Terminal\" to do script \"\(generateSSHCommand(for: host))\""
-        ]
-
-        do {
-            try task.run()
-            task.waitUntilExit()
-        } catch {
-            print("启动终端失败: \(error)")
-            connectWithiTerm2(host: host)
+        switch preferences.preferredTerminal {
+        case .iTerm2:
+            connectWithiTerm2NewTab(host: host)
+        case .terminal:
+            connectWithTerminal(host: host)
         }
     }
 
@@ -45,7 +39,7 @@ class SSHConnector: ObservableObject {
             try task.run()
         } catch {
             print("启动iTerm2新标签页失败: \(error)")
-            connectWithiTerm2(host: host)
+            connectWithiTerm2Window(host: host)
         }
     }
 
@@ -77,7 +71,23 @@ class SSHConnector: ObservableObject {
         }
     }
 
-    private func connectWithiTerm2(host: SSHHost) {
+    private func connectWithTerminal(host: SSHHost) {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        task.arguments = [
+            "-e", "tell app \"Terminal\" to do script \"\(generateSSHCommand(for: host))\""
+        ]
+
+        do {
+            try task.run()
+            task.waitUntilExit()
+        } catch {
+            print("启动Terminal失败: \(error)")
+            connectDirectly(host: host)
+        }
+    }
+
+    private func connectWithiTerm2Window(host: SSHHost) {
         let sshCommand = generateSSHCommand(for: host)
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
@@ -132,8 +142,9 @@ class SSHConnector: ObservableObject {
     }
 
     private func buildTestArguments(for host: SSHHost) -> [String] {
+        let timeout = preferences.testTimeout
         var args = [
-            "-o", "ConnectTimeout=10",
+            "-o", "ConnectTimeout=\(timeout)",
             "-o", "BatchMode=yes",
             "-o", "StrictHostKeyChecking=accept-new",
             "-o", "PreferredAuthentications=publickey",
