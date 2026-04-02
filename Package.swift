@@ -17,6 +17,11 @@ let package = Package(
             name: "SSHManager",
             dependencies: ["Sparkle"],
             path: "Sources/SSHManager"
+        ),
+        .testTarget(
+            name: "SSHManagerTests",
+            dependencies: ["SSHManager"],
+            path: "Tests/SSHManagerTests"
         )
     ]
 )
