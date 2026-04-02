@@ -2,6 +2,7 @@ import Foundation
 
 class SSHConnector: ObservableObject {
     private let preferences = UserPreferences.shared
+    private let history = ConnectionHistory.shared
 
     func connect(to host: SSHHost) {
         switch preferences.preferredTerminal {
@@ -59,14 +60,17 @@ class SSHConnector: ObservableObject {
             let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
 
             if process.terminationStatus == 0 {
+                history.record(host: host, success: true, latency: timeElapsed)
                 return .success(latency: timeElapsed)
             } else {
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
                 let output = String(data: data, encoding: .utf8) ?? ""
                 let error = SSHErrorParser.parseSystemError(output)
+                history.record(host: host, success: false)
                 return .failure(error)
             }
         } catch {
+            history.record(host: host, success: false)
             return .failure(.unknown(error.localizedDescription))
         }
     }
