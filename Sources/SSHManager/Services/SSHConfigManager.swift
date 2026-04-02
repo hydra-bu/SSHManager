@@ -116,6 +116,28 @@ class SSHConfigManager: ObservableObject {
         saveConfig()
     }
 
+    // 批量删除主机
+    func removeHosts(_ hostIds: Set<UUID>) {
+        hosts.removeAll { hostIds.contains($0.id) }
+        saveConfig()
+    }
+
+    // 批量移动到分组
+    func moveHostsToGroup(_ hostIds: Set<UUID>, groupId: UUID?) {
+        for host in hosts where hostIds.contains(host.id) {
+            host.groupId = groupId
+        }
+        saveConfig()
+    }
+
+    // 批量收藏/取消收藏
+    func setFavorite(_ favorite: Bool, for hostIds: Set<UUID>) {
+        for host in hosts where hostIds.contains(host.id) {
+            host.isFavorite = favorite
+        }
+        saveConfig()
+    }
+
     // 从文件导入配置
     func importFrom(path: String, strategy: ImportStrategy = .skipDuplicates) -> ImportResult {
         let importedHosts = SSHConfigParser.load(from: path)
