@@ -6,6 +6,9 @@ struct SidebarView: View {
     var onAddHost: () -> Void
     @State private var showingGroupManager = false
     @State private var refreshID = UUID()
+    @State private var showingImportDialog = false
+    @State private var importResult: ImportResult?
+    @State private var showingImportResult = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -79,9 +82,21 @@ struct SidebarView: View {
     }
     
     private var toolbar: some View {
-        HStack {
+        HStack(spacing: 8) {
+            Button(action: { importFromDefault() }) {
+                Image(systemName: "square.and.arrow.down")
+            }
+            .buttonStyle(.borderless)
+            .help("从 ~/.ssh/config 导入")
+
+            Button(action: { importFromFile() }) {
+                Image(systemName: "doc.badge.plus")
+            }
+            .buttonStyle(.borderless)
+            .help("从文件导入配置")
+
             Spacer()
-            
+
             Button(action: { showingGroupManager = true }) {
                 Image(systemName: "folder.badge.plus")
             }
@@ -91,6 +106,34 @@ struct SidebarView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(Color(NSColor.controlBackgroundColor))
+        .alert("导入完成", isPresented: $showingImportResult) {
+            Button("好的", role: .cancel) { }
+        } message: {
+            Text(importResult?.description ?? "")
+        }
+    }
+
+    private func importFromDefault() {
+        if let result = configManager.importFromDefaultLocation() {
+            importResult = result
+            showingImportResult = true
+            refreshID = UUID()
+        }
+    }
+
+    private func importFromFile() {
+        let panel = NSOpenPanel()
+        panel.title = "选择SSH配置文件"
+        panel.allowedContentTypes = [.data, .text, .plainText]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        if panel.runModal() == .OK, let url = panel.url {
+            let result = configManager.importFrom(path: url.path)
+            importResult = result
+            showingImportResult = true
+            refreshID = UUID()
+        }
     }
 }
 
