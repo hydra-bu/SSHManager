@@ -35,6 +35,7 @@ struct SSHManagerApp: App {
     @StateObject private var configManager = SSHConfigManager()
     @State private var showingPortForwardWizard = false
     @State private var showingJumpHostWizard = false
+    @State private var showingSettings = false
     
     private let updaterController: SPUStandardUpdaterController
     
@@ -75,6 +76,9 @@ struct SSHManagerApp: App {
                         .environmentObject(configManager)
                     }
                 }
+                .sheet(isPresented: $showingSettings) {
+                    SettingsView(isPresented: $showingSettings)
+                }
         }
         .windowToolbarStyle(.unifiedCompact)
         .commands {
@@ -86,6 +90,11 @@ struct SSHManagerApp: App {
             
             CommandGroup(after: .appInfo) {
                 CheckForUpdatesView(updater: updaterController.updater)
+
+                Button("偏好设置…") {
+                    showingSettings = true
+                }
+                .keyboardShortcut(",", modifiers: [.command])
             }
             
             CommandMenu("主机") {
