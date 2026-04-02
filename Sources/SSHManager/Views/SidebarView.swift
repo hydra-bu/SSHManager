@@ -9,6 +9,9 @@ struct SidebarView: View {
     @State private var showingImportDialog = false
     @State private var importResult: ImportResult?
     @State private var showingImportResult = false
+    @State private var isSelectionMode = false
+    @State private var selectedHostIds = Set<UUID>()
+    @State private var showingDeleteConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -83,6 +86,32 @@ struct SidebarView: View {
     
     private var toolbar: some View {
         HStack(spacing: 8) {
+            if isSelectionMode {
+                batchToolbar
+            } else {
+                normalToolbar
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(NSColor.controlBackgroundColor))
+        .alert("导入完成", isPresented: $showingImportResult) {
+            Button("好的", role: .cancel) { }
+        } message: {
+            Text(importResult?.description ?? "")
+        }
+        .alert("确认删除", isPresented: $showingDeleteConfirmation) {
+            Button("取消", role: .cancel) { }
+            Button("删除", role: .destructive) {
+                deleteSelected()
+            }
+        } message: {
+            Text("确定要删除选中的 \(selectedHostIds.count) 个主机吗？")
+        }
+    }
+
+    private var normalToolbar: some View {
+        HStack(spacing: 8) {
             Button(action: { importFromDefault() }) {
                 Image(systemName: "square.and.arrow.down")
             }
@@ -95,6 +124,12 @@ struct SidebarView: View {
             .buttonStyle(.borderless)
             .help("从文件导入配置")
 
+            Button(action: { toggleSelectionMode() }) {
+                Image(systemName: "checklist")
+            }
+            .buttonStyle(.borderless)
+            .help("选择模式")
+
             Spacer()
 
             Button(action: { showingGroupManager = true }) {
@@ -103,14 +138,82 @@ struct SidebarView: View {
             .buttonStyle(.borderless)
             .help("管理分组")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color(NSColor.controlBackgroundColor))
-        .alert("导入完成", isPresented: $showingImportResult) {
-            Button("好的", role: .cancel) { }
-        } message: {
-            Text(importResult?.description ?? "")
+    }
+
+    private var batchToolbar: some View {
+        HStack(spacing: 8) {
+            Text("\(selectedHostIds.count) 已选")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Button(action: { selectAll() }) {
+                Image(systemName: "checkmark.rectangle.stack")
+            }
+            .buttonStyle(.borderless)
+            .help("全选")
+
+            Menu {
+                Button("收藏选中") { favoriteSelected(true) }
+                Button("取消收藏") { favoriteSelected(false) }
+                Divider()
+                ForEach(configManager.groups) { group in
+                    Button(group.name) { moveSelectedToGroup(group.id) }
+                }
+                Button("移出分组") { moveSelectedToGroup(nil) }
+            } label: {
+                Image(systemName: "folder.badge.gearshape")
+            }
+            .menuStyle(.borderlessButton)
+            .help("批量操作")
+
+            Button(action: { showingDeleteConfirmation = true }) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(.borderless)
+            .disabled(selectedHostIds.isEmpty)
+            .help("删除选中")
+
+            Spacer()
+
+            Button(action: { toggleSelectionMode() }) {
+                Text("完成")
+                    .font(.caption)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
         }
+    }
+
+    private func toggleSelectionMode() {
+        isSelectionMode.toggle()
+        if !isSelectionMode {
+            selectedHostIds.removeAll()
+        }
+    }
+
+    private func selectAll() {
+        if selectedHostIds.count == configManager.hosts.count {
+            selectedHostIds.removeAll()
+        } else {
+            selectedHostIds = Set(configManager.hosts.map { $0.id })
+        }
+    }
+
+    private func deleteSelected() {
+        configManager.removeHosts(selectedHostIds)
+        selectedHostIds.removeAll()
+        refreshID = UUID()
+    }
+
+    private func favoriteSelected(_ favorite: Bool) {
+        configManager.setFavorite(favorite, for: selectedHostIds)
+        refreshID = UUID()
+    }
+
+    private func moveSelectedToGroup(_ groupId: UUID?) {
+        configManager.moveHostsToGroup(selectedHostIds, groupId: groupId)
+        refreshID = UUID()
     }
 
     private func importFromDefault() {
