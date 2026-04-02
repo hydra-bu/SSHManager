@@ -27,10 +27,11 @@ class SSHConnector: ObservableObject {
 
     // 使用iTerm2连接（如果安装了的话）
     private func connectWithiTerm2(host: SSHHost) {
+        let sshCommand = generateSSHCommand(for: host)
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
         task.arguments = [
-            "-e", "tell app \"iTerm\" to create window with default profile command \"ssh \(host.alias)\""
+            "-e", "tell app \"iTerm\" to create window with default profile command \"\(sshCommand)\""
         ]
 
         do {
@@ -41,6 +42,52 @@ class SSHConnector: ObservableObject {
             // 最后尝试直接执行ssh命令
             connectDirectly(host: host)
         }
+    }
+
+    // 使用iTerm2在新标签页连接
+    func connectWithiTerm2NewTab(host: SSHHost) {
+        let sshCommand = generateSSHCommand(for: host)
+        let escapedCommand = sshCommand.replacingOccurrences(of: "\"", with: "\\\"")
+        
+        let appleScript = """
+        tell application "iTerm"
+            activate
+            if (count of windows) = 0 then
+                create window with default profile
+            end if
+            tell current session of current tab of current window
+                set newTab to (split horizontally with default profile)
+                tell newTab
+                    write text "\(escapedCommand)"
+                end tell
+            end tell
+        end tell
+        """
+        
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        task.arguments = ["-e", appleScript]
+
+        do {
+            try task.run()
+        } catch {
+            print("启动iTerm2新标签页失败: \(error)")
+            // 如果失败，尝试创建新窗口
+            connectWithiTerm2(host: host)
+        }
+    }
+
+    // 生成SSH命令
+    private func generateSSHCommand(for host: SSHHost) -> String {
+        var cmd = "ssh"
+        if host.port != 22 {
+            cmd += " -p \(host.port)"
+        }
+        if !host.identityFile.isEmpty {
+            cmd += " -i \(host.identityFile)"
+        }
+        cmd += " \(host.getUserAtHost())"
+        return cmd
     }
 
     // 直接连接（用于测试）
@@ -62,11 +109,14 @@ class SSHConnector: ObservableObject {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
         process.arguments = [
-            "-o", "ConnectTimeout=5",
+            "-o", "ConnectTimeout=10",
             "-o", "BatchMode=yes",
-            "-o", "StrictHostKeyChecking=no",
-            "-T",
-            host.alias
+            "-o", "StrictHostKeyChecking=accept-new",
+            "-o", "PreferredAuthentications=publickey",
+            "-o", "ServerAliveInterval=5",
+            "-o", "ServerAliveCountMax=1",
+            "-p", "\(host.port)",
+            host.getUserAtHost()
         ]
 
         let pipe = Pipe()
@@ -96,12 +146,18 @@ class SSHConnector: ObservableObject {
 // SSH错误解析器
 class SSHErrorParser {
     static func parseSystemError(_ output: String) -> SSHConnectionError {
-        if output.contains("Permission denied") || output.contains("publickey") {
+        if output.contains("Connection refused") || output.contains("kex_exchange_identification") {
+            return .connectionRefused
+        } else if output.contains("Permission denied") || output.contains("publickey") {
             return .permissionDenied
         } else if output.contains("Connection timed out") || output.contains("Operation timed out") {
             return .connectionTimeout
-        } else if output.contains("Name or service not known") || output.contains("nodename nor servname provided") {
+        } else if output.contains("Name or service not known") || output.contains("nodename nor servname provided") || output.contains("Could not resolve hostname") {
             return .unknownHost
+        } else if output.contains("No route to host") {
+            return .noRouteToHost
+        } else if output.contains("Network is unreachable") {
+            return .networkUnreachable
         } else if output.contains("No such file") || output.contains("not found") {
             // 尝试找出是哪个文件不存在
             let lines = output.components(separatedBy: "\n")
@@ -112,8 +168,10 @@ class SSHErrorParser {
                 }
             }
             return .keyFileNotFound("unknown_path")
-        } else if output.contains("Bad permissions") {
+        } else if output.contains("Bad permissions") || output.contains("Permission denied (publickey)") {
             return .keyFileWrongPermissions("unknown_path")
+        } else if output.contains("Host key verification failed") {
+            return .hostKeyVerificationFailed
         } else {
             return .unknown(output)
         }

@@ -27,6 +27,12 @@ struct HostDetailView: View {
                     }
                     .buttonStyle(.bordered)
                     .disabled(host.isTesting)
+
+                    Button(action: connectNow) {
+                        Label("立即连接", systemImage: "terminal")
+                    }
+                    .buttonStyle(.bordered)
+                    .keyboardShortcut("n", modifiers: [.command])
                     
                     Spacer()
                 }
@@ -222,6 +228,11 @@ struct HostDetailView: View {
                 host.isTesting = false
             }
         }
+    }
+    
+    private func connectNow() {
+        let connector = SSHConnector()
+        connector.connectWithiTerm2NewTab(host: host)
     }
 }
 

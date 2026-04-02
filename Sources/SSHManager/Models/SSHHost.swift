@@ -18,6 +18,10 @@ enum ConnectionTestResult: Equatable {
 enum SSHConnectionError: Error, LocalizedError {
     case permissionDenied
     case connectionTimeout
+    case connectionRefused
+    case noRouteToHost
+    case networkUnreachable
+    case hostKeyVerificationFailed
     case unknownHost
     case keyFileNotFound(String)
     case keyFileWrongPermissions(String)
@@ -29,6 +33,14 @@ enum SSHConnectionError: Error, LocalizedError {
             return "服务器拒绝了你的连接，请检查密钥配置"
         case .connectionTimeout:
             return "连接超时，请检查主机地址和网络连接"
+        case .connectionRefused:
+            return "连接被拒绝，SSH服务可能未运行或端口不正确"
+        case .noRouteToHost:
+            return "无法到达主机，请检查网络连接和主机地址"
+        case .networkUnreachable:
+            return "网络不可达，请检查网络配置"
+        case .hostKeyVerificationFailed:
+            return "主机密钥验证失败，可能存在中间人攻击或主机已重装"
         case .unknownHost:
             return "无法解析主机地址"
         case .keyFileNotFound(let path):
